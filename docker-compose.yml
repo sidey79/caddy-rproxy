@@ -11,12 +11,12 @@ services:
       - "2019:2019"
       - "443:443/udp"
     volumes:
-      - "opt/docker/caddy/Caddyfile:/etc/caddy/Caddyfile"
-      - "opt/docker/caddy/site:/srv"
-      - "opt/docker/caddy/data:/data"
-      - "opt/docker/caddy/caddy_config:/config"
-      - "opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/ca.crt:ro"
-      - "opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/ca.crl:ro"
+      - "/opt/docker/caddy/Caddyfile:/etc/caddy/Caddyfile"
+      - "/opt/docker/caddy/site:/srv"
+      - "/opt/docker/caddy/data:/data"
+      - "/opt/docker/caddy/caddy_config:/config"
+      - "/opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/ca.crt:ro"
+      - "/opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/ca.crl:ro"
     labels:
       - "diun.enable=true"
       - "diun.watch_repo=false"
