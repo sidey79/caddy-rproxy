@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   caddy:
-    image: caddy:2.6.2
+    image: caddy:2.6.4
     restart: unless-stopped
     network_mode: host
     ports:
