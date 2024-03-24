@@ -5,6 +5,8 @@ services:
     image: caddy:2.7.6
     restart: unless-stopped
     network_mode: host
+    network:
+     - caddy_proxy_net
     ports:
       - "80:80"
       - "443:443"
@@ -17,10 +19,16 @@ services:
       - "/opt/docker/caddy/caddy_config:/config"
       - "/opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/ca.crt:ro"
       - "/opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/ca.crl:ro"
-    
+
+
 networks:
   caddy_proxy_net:
+    driver: bridge
+    # enable_ipv6: true
     ipam:
+      driver: default
       config:
         - subnet: 172.28.18.0/27
-          ip_range: 172.28.18.0/24
+          gateway: 172.28.18.1
+        - subnet: fd00:0:0:0:28::/80
+          gateway: fd00:0:0:0:28::1
