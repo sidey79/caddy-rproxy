@@ -5,7 +5,7 @@ services:
     image: caddy:2.7.6
     restart: unless-stopped
     network_mode: host
-    network:
+    networks:
      - caddy_proxy_net
     ports:
       - "80:80"
