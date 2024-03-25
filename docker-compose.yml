@@ -9,11 +9,11 @@ services:
       homelan:
          ipv4_address: 10.2.11.19
          ipv6_address: fd00:10:2:11::19
-    ports:
-      - "80:80"
-      - "443:443"
-      - "2019:2019"
-      - "443:443/udp"
+    #ports:
+    #  - "80:80"
+    #  - "443:443"
+    #  - "2019:2019"
+    #  - "443:443/udp"
     volumes:
       - "/opt/docker/caddy/Caddyfile:/etc/caddy/Caddyfile"
       - "/opt/docker/caddy/site:/srv"
