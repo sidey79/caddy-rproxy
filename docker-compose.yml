@@ -15,7 +15,7 @@ services:
     #  - "2019:2019"
     #  - "443:443/udp"
     volumes:
-      - "/opt/docker/caddy/Caddyfile:/etc/caddy/Caddyfile"
+      - "/opt/docker/caddy/Caddyfile_tst:/etc/caddy/Caddyfile"
       - "/opt/docker/caddy/site:/srv"
       - "/opt/docker/caddy/data:/data"
       - "/opt/docker/caddy/caddy_config:/config"
