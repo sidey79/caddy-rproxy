@@ -2,9 +2,9 @@ version: "2.4"
 
 services:
   caddy:
-    sysctls:
-      net.core.rmem_max: 2500000
-      net.core.wmem_max: 2500000
+    #sysctls:
+    #  net.core.rmem_max: 2500000
+    #  net.core.wmem_max: 2500000
     image: caddy:2.7.6
     restart: unless-stopped
     networks:
