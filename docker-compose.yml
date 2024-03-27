@@ -1,22 +1,34 @@
-version: "3.7"
+version: "2.4"
 
 services:
   caddy:
     image: caddy:2.7.6@sha256:d8d3637a26f50bf0bd27a6151d2bd4f7a9f0455936fe7ca2498abbc2e26c841e
+    #sysctls:
+    #  net.core.rmem_max: 2500000
+    #  net.core.wmem_max: 2500000
     restart: unless-stopped
-    network_mode: host
-    ports:
-      - "80:80"
-      - "443:443"
-      - "2019:2019"
-      - "443:443/udp"
+    networks:
+      backend_net:
+      homelan:
+         ipv4_address: 10.2.11.19
+         ipv6_address: fd00:10:2:11::19
+    #ports:
+    #  - "80:80"
+    #  - "443:443"
+    #  - "2019:2019"
+    #  - "443:443/udp"
     volumes:
-      - "/opt/docker/caddy/Caddyfile:/etc/caddy/Caddyfile"
+      - "/opt/docker/caddy/Caddyfile_tst:/etc/caddy/Caddyfile"
       - "/opt/docker/caddy/site:/srv"
       - "/opt/docker/caddy/data:/data"
       - "/opt/docker/caddy/caddy_config:/config"
       - "/opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/ca.crt:ro"
       - "/opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/ca.crl:ro"
-    labels:
-      - "diun.enable=true"
-      - "diun.watch_repo=false"
+
+networks:
+  backend_net:
+    external: true
+    name: network_backend_net
+  homelan:
+    external: true
+    name: network_homelan
