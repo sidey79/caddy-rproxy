@@ -7,6 +7,8 @@ services:
     #  net.core.rmem_max: 2500000
     #  net.core.wmem_max: 2500000
     restart: unless-stopped
+    environment:
+      CADDY_CONFIG: $CADDY_CONFIG
     networks:
       backend_net:
       homelan:
