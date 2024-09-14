@@ -2,7 +2,7 @@ version: "2.4"
 
 services:
   caddy:
-    image: caddy:2.8.4@sha256:8ebad2171ccba7c5cb39cebb1c6eec8db77d004c66d9159f5f6dd5916053cd07
+    image: caddy:2.8.4@sha256:c6a5f2835a53fd9e2b5e0623dc7ebf0f89c163c21c05cbbc35e4ea31ff424417
     #sysctls:
     #  net.core.rmem_max: 2500000
     #  net.core.wmem_max: 2500000
