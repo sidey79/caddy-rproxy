@@ -6,6 +6,8 @@ services:
     #sysctls:
     #  net.core.rmem_max: 2500000
     #  net.core.wmem_max: 2500000
+    cap_add:
+      - NET_ADMIN
     restart: unless-stopped
     environment:
       CADDY_CONFIG: $CADDY_CONFIG
@@ -20,7 +22,7 @@ services:
     #  - "2019:2019"
     #  - "443:443/udp"
     volumes:
-      - "/opt/docker/caddy/Caddyfile_tst:/etc/caddy/Caddyfile"
+      - "/opt/docker/caddy/conf:/etc/caddy"
       - "/opt/docker/caddy/site:/srv"
       - "/opt/docker/caddy/data:/data"
       - "/opt/docker/caddy/caddy_config:/config"
