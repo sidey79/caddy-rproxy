@@ -11,3 +11,4 @@ jobs:
         with:
           path: ./
           recursive: true
+          fix: true
