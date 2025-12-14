@@ -125,6 +125,6 @@ caddy.{CADDY_SUBDOMAIN2}  {
 }
 
 tabbyml.{CADDY_SUBDOMAIN} {
-        reverse_proxy ip4:http://thor:8080
+        reverse_proxy http://10.2.11.57:8080
         import logging_info
 }
