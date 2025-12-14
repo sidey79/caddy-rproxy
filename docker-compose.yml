@@ -3,12 +3,6 @@ name: caddy-rproxy
 services:
   caddy:
     image: caddy:2.10.2@sha256:dedfbbeb703b2ce9ff4a98fc06aa9c7c7d9a42f0b7d778738c1dd3ef11dcc767
-    restart: unless-stopped
-    environment:
-      CADDY_SUBDOMAIN: $CADDY_SUBDOMAIN
-      CADDY_SUBDOMAIN2: $CADDY_SUBDOMAIN2
-      CADDY_ADMIN_USER: $CADDY_ADMIN_USER
-      CADDY_ADMIN_PASSWORD: $CADDY_ADMIN_PASSWORD
     networks:
       backend_net:
       homelan:
@@ -21,6 +15,12 @@ services:
       - ./caddy_config:/config
       - /opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/ca.crt:ro
       - /opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/ca.crl:ro
+    environment:
+      CADDY_SUBDOMAIN: $CADDY_SUBDOMAIN
+      CADDY_SUBDOMAIN2: $CADDY_SUBDOMAIN2
+      CADDY_ADMIN_USER: $CADDY_ADMIN_USER
+      CADDY_ADMIN_PASSWORD: $CADDY_ADMIN_PASSWORD
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
 
