@@ -3,11 +3,6 @@ name: caddy-rproxy
 services:
   caddy:
     image: caddy:2.10.2@sha256:dedfbbeb703b2ce9ff4a98fc06aa9c7c7d9a42f0b7d778738c1dd3ef11dcc767
-    networks:
-      backend_net:
-      homelan:
-        ipv4_address: 10.2.11.19
-        ipv6_address: fd00:10:2:11::19
     volumes:
       - ./conf:/etc/caddy
       - ./site:/srv
@@ -20,6 +15,11 @@ services:
       CADDY_SUBDOMAIN2: $CADDY_SUBDOMAIN2
       CADDY_ADMIN_USER: $CADDY_ADMIN_USER
       CADDY_ADMIN_PASSWORD: $CADDY_ADMIN_PASSWORD
+    networks:
+      backend_net:
+      homelan:
+        ipv4_address: 10.2.11.19
+        ipv6_address: fd00:10:2:11::19
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
