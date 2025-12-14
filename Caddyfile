@@ -35,6 +35,11 @@
         }
 }
 
+(local_ip_ranges) {
+   not client_ip 10.2.11.0/24
+}
+
+
 # use this import if you want to be able to fallback to basic auth
 (mTLS_optional) {
         tls {
@@ -60,18 +65,26 @@
 #}
 
 
-fhem.{CADDY_SUBDOMAIN} {
+fhem.{$CADDY_SUBDOMAIN} {
         import mTLS_required
         encode gzip
-        reverse_proxy http://fhem-fhem-1.network_backend_net:8083
+        reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
+                transport http {
+                        tls_server_name zeus.fritz.box
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
+
         import logging_info
 }
 
 
-dms.{CADDY_SUBDOMAIN} {
+dms.{$CADDY_SUBDOMAIN} {
         import mTLS_required
         encode gzip
-        reverse_proxy http://mayan-dms-app-1.network_backend_net:8000
+        reverse_proxy http://paperless-ngx-webserver-1.network_backend_net:8000
         import logging_info
 }
 
@@ -85,7 +98,7 @@ dms.{CADDY_SUBDOMAIN} {
         redir @admin /
 }
 
-bitwarden.{CADDY_SUBDOMAIN} {
+bitwarden.{$CADDY_SUBDOMAIN} {
         encode gzip
         import admin_redir
 
@@ -113,7 +126,8 @@ bitwarden.{CADDY_SUBDOMAIN} {
         }
         import logging_info
 }
-caddy.{CADDY_SUBDOMAIN2}  {
+
+caddy.{$CADDY_SUBDOMAIN2} {
         import mTLS_required
         encode gzip
         reverse_proxy https://fhem-docker-test-fhem-1.network_backend_net:8083 {
@@ -124,7 +138,27 @@ caddy.{CADDY_SUBDOMAIN2}  {
         import logging_info
 }
 
-tabbyml.{CADDY_SUBDOMAIN} {
+ui.{$CADDY_SUBDOMAIN} {
+        import mTLS_required
+        root * /srv/ftui
+        rewrite /images/* /fhem{uri}
+
+        reverse_proxy /fhem/images/* https://fhem-fhem-1.network_backend_net:8088 {
+               transport http {
+                        tls_server_name zeus.fritz.box
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
+        file_server
+        #import logging_info
+        log {
+                level DEBUG
+        }
+}
+
+tabbyml.{$CADDY_SUBDOMAIN} {
         reverse_proxy http://10.2.11.57:8080
         import logging_info
 }
