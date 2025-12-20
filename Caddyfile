@@ -101,7 +101,13 @@ dms.{$CADDY_SUBDOMAIN} {
 bitwarden.{$CADDY_SUBDOMAIN} {
         encode gzip
         import admin_redir
-
+	route {
+		@tasks path /api/tasks
+		handle @tasks {
+			header Content-Type application/json
+			respond `{"data":[],"object":"list"}` 200
+		}
+	}
         # If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
         header / {
                 # Enable HTTP Strict Transport Security (HSTS)
