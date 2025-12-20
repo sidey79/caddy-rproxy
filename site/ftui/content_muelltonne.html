@@ -1,0 +1,22 @@
+<ftui-label size="3">{{title}}</ftui-label>
+<ftui-icon [class-name]="myABFALL:{{tonnenname}}_days | step('0=spin size-6, 1=hop size-6, 2=``')" name="trash-o" color="grey" size="3" ></ftui-icon>
+<ftui-row width="80%" height="12%">
+    <ftui-label [color]="myABFALL:{{tonnenname}}_days  | step('0:alert, 1:warning, 2:ok')" [text]="myABFALL:{{tonnenname}}_text"></ftui-label>
+    <ftui-label [color]="myABFALL:{{tonnenname}}_days  | step('0:alert, 1:warning, 2:ok')" [text]="myABFALL:{{tonnenname}}_days"></ftui-label>
+    <ftui-label [color]="myABFALL:{{tonnenname}}_days  | step('0:alert, 1:warning, 2:ok')"> Tage</ftui-label>
+</ftui-row>
+<ftui-row width="80%" height="23%">
+    <ftui-label [text]="
+                 myABFALL:{{tonnenname}}_days | days=>{this.days=days};
+                 myABFALL:{{tonnenname}}_weekday | weekday=>{this.wd=(this.days<=5)?weekday:this.days+' Tage' } | ()=>this.text=this.wd;
+                "
+        
+        >
+    </ftui-label>
+</ftui-row>
+
+<!--
+myABFALL:{{tonnenname}}_weekday | t1=>{this.{{tonnenname}}_weekday=t1, this.t1=this.{{tonnenname}}_weekday} | ()=>this.text=this.t1"
+                                myABFALL:{{tonnenname}}_days | t2=>{this.days=t2, this.t2=this.days==0?'Heute':this.weekday } | ()=>this.text=this.t2;                        
+
+-->

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--
+    /* FHEM tablet ui - FTUI */
+    /**
+    * UI builder framework for FHEM
+    *
+    * Version: 3.0.0
+    *
+    * Copyright (c) 2015-2021 Mario Stephan <mstephan@shared-files.de>
+    * Under MIT License (http://www.opensource.org/licenses/mit-license.php)
+    * https://github.com/knowthelist/ftui
+    */
+    -->
+  <script src="ftui.js"></script>
+
+  <link href="ftui.css" rel="stylesheet">
+  <link href="themes/ftui-theme.css" rel="stylesheet">
+  <link href="favicon.ico" rel="icon" type="image/x-icon" />
+
+  <!-- avoid 300ms delay on click-->
+  <meta name="viewport" content="width=device-width">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="toast_position" content="topLeft">
+  
+
+  <meta name="fhemweb_url" content="https://zeus:8088/fhem/">
+  <!-- verbose level 0-4 -->
+  <meta name="debug" content="0">
+
+
+  <title>Automationsseite</title>
+</head>
+
+<body>
+  <ftui-grid base-width="78" base-height="70" margin="5" shape="round">
+
+    <ftui-grid-tile row="1" col="1" height="15" width="1">
+      <ftui-column>
+        <ftui-tab view="View1" size="large" active>
+          <ftui-icon name="home"></ftui-icon>
+        </ftui-tab>
+        <ftui-tab view="View2" direction="vertical">
+          <ftui-icon name="music"></ftui-icon>
+          <ftui-label>Music</ftui-label>
+        </ftui-tab>
+        <ftui-tab view="View3">
+          <ftui-icon name="feed"></ftui-icon>
+        </ftui-tab>
+        <ftui-tab view="View4">
+          <ftui-icon name="lightbulb"></ftui-icon>
+        </ftui-tab>
+        <ftui-tab view="View5">
+          <ftui-icon name="wrench"></ftui-icon>
+        </ftui-tab>
+      </ftui-column>
+    </ftui-grid-tile>
+
+    <ftui-tab-view id="View1">
+      <ftui-grid-tile row="1" col="2" height="2" width="2" shape="round" color="primary">
+        <ftui-clock format="ee, DD.MM.YY" ></ftui-clock>
+        <ftui-clock format="hh:mm" size="3"></ftui-clock>
+      </ftui-grid-tile>
+
+
+
+      <!-- Tonnen -->
+    
+      <ftui-grid-tile row="1" col="4" height="2" width="2">
+        <ftui-content file="content_muelltonne.html" tonnenname="Biomuell" title="Bio" ></ftui-content>
+      </ftui-grid-tile>
+
+      <ftui-grid-tile row="1" col="6" height="2" width="2">
+        <ftui-content file="content_muelltonne.html" tonnenname="BlaueTonne" title="Papier" ></ftui-content>
+      </ftui-grid-tile>
+
+      <ftui-grid-tile row="1" col="8" height="2" width="2">
+        <ftui-content file="content_muelltonne.html" tonnenname="GelberSack" title="Recycling" ></ftui-content>
+      </ftui-grid-tile>
+
+      <ftui-grid-tile row="1" col="10" height="2" width="2">
+        <ftui-content file="content_muelltonne.html" tonnenname="Hausmuell" title="Restmüll" ></ftui-content>
+      </ftui-grid-tile>
+
+
+       <!--
+      <ftui-grid-tile row="1" col="4" height="2" width="2"
+                      [color]="AbfallView:t_001_daysleft  | step('0:alert, 1:warning, 2:ok')">
+        <ftui-label size="3">Tonnen</ftui-label>
+        <ftui-icon name="trash-o" size="3"></ftui-icon>
+        <ftui-row width="80%" height="10%">
+          <ftui-label [text]="AbfallView:t_001_summary | part(1)"></ftui-label>
+          <ftui-label [text]="AbfallView:t_001_daysleftLong"></ftui-label>
+        </ftui-row>
+      </ftui-grid-tile>
+      -->
+
+      <!-- Jalousie -->
+      <!--
+      <ftui-grid-tile row="1" col="6" height="2" width="2" shape="round"
+                      [color]="AllJalousie:position | step('5:warning, 35:ok')">
+        <ftui-label size="3">Jalousien</ftui-label>
+        <ftui-row height="45%">
+          <ftui-button (value)="set AllJalousie fahren up" direction="vertical" color="current" fill="none"
+                       margin="-1em">
+            <ftui-icon name="angle-up" class="size-1" height="90%"></ftui-icon>
+            <ftui-label>Tag</ftui-label>
+          </ftui-button>
+          <ftui-icon name="window-shutter" class="size-4"></ftui-icon>
+          <ftui-button @click="sendFhem('{setJalousieNight()}')" direction="vertical" color="current" fill="none"
+                       margin="-1em">
+            <ftui-icon name="angle-down" class="size-1" height="90%"></ftui-icon>
+            <ftui-label>Nacht</ftui-label>
+          </ftui-button>
+        </ftui-row>
+        <ftui-label [text]="AllJalousie:position | toInt()" unit="%" size="1"></ftui-label>
+      </ftui-grid-tile>
+      -->
+
+      <!-- Batteriewarnung -->
+      <!-- [color]="(m_batt_chk:errorCount > 0 ? m_batt_chk:errorCount : m_batt_chk:warningCount)  |  map(0:alert, .*:alert)"> -->
+
+      <!--
+      <ftui-grid-tile row="3" col="6" height="2" width="2">
+        <ftui-label size="3">Batterie</ftui-label>
+        <ftui-icon name="battery" size="2" [color]="
+        m_batt_chk:errorCount | c1=>{this.reading1=c1, this.c1=(
+          this.reading1 >0 ? 'red'    : 
+          this.reading2 >0 ? 'yellow' : 'green'
+        )} | ()=>this.color=this.c1;
+        m_batt_chk:warningCount | c2=>{this.reading2=c2, this.c2=(
+          this.reading1 >0 ? 'red'    : 
+          this.reading2 >0 ? 'yellow' : 'green'
+        )} | ()=>this.color=this.c2;">
+        </ftui-icon>
+        <ftui-label [text]="m_batt_chk:warning
+          | replace('\.',': ')
+          | replace('Kinderzimmer','Kind-')
+          | replace('Kuechen','Küche')
+          | replace('Wohnzimmer','WZ-')
+          | replace('bad','Badezimmer')
+          " width="80%">
+        </ftui-label>
+      </ftui-grid-tile>
+      -->
+      <ftui-grid-tile row="3" col="6" height="2" width="2">
+        <ftui-label size="3">Batterie</ftui-label>
+        <ftui-icon name="battery" size="2" [color]="m_batt_chk:colorStatus">
+        </ftui-icon>
+        <ftui-label [text]="m_batt_chk:warning
+          | replace('\.',': ')
+          | replace('Kinderzimmer','Kind-')
+          | replace('Kuechen','Küche')
+          | replace('Wohnzimmer','WZ-')
+          | replace('bad','Badezimmer')
+          " width="80%">
+        </ftui-label>
+      </ftui-grid-tile>
+      <!-- FENSTER -->
+<!--
+      <ftui-grid-tile row="3" col="8" height="2" width="2" 
+                      [color]="m_window_chk:allCount | map(0:alert, .*:alert)">
+        <ftui-label size="3">Fenster</ftui-label>
+        <ftui-icon name="classic-window" size="3"></ftui-icon>
+        <ftui-label [text]="m_window_chk:warning
+          | replace('','alle geschlossen') 
+          | replace('Kinderzimmer','Kind-')
+          | replace('Kuechen','Küche')
+          | replace('Wohnzimmer','WZ-')
+          | replace(/Fenster/g,'')
+          | replace('noch offen','')" width="80%"></ftui-label>
+      </ftui-grid-tile>
+-->       
+      <!-- Eingangstuer -->
+      <ftui-grid-tile row="3" col="10" height="2" width="2" shape="round">
+        <ftui-label size="3">Tür</ftui-label>
+        <ftui-icon name="front-door" size="3" [color]="fl.schloss:lock | map('locked: ok, .*:alert')"></ftui-icon>
+        <ftui-label [text]="fl.schloss:secure | map('locked.*:abgeschlossen, open.*:offen')">
+        </ftui-label>
+      </ftui-grid-tile>
+
+      <!-- HERD -->
+      <!--
+      <ftui-grid-tile row="1" col="12" height="2" width="2"
+                      [color]="HerdSummeStromwert  | step('0:ok, 700:alert')">
+        <ftui-label size="3">Herd</ftui-label>
+        <ftui-icon name="cutlery" size="3"></ftui-icon>
+        <ftui-label [text]="HerdSummeStromwert"></ftui-label>
+      </ftui-grid-tile>
+      -->
+
+      <!-- Temp -->
+      <ftui-grid-tile row="3" col="2" height="2" width="2" shape="round">
+        <ftui-label size="2">Wohnzimmer</ftui-label>
+        <ftui-knob [value]="wk.mpcs:wz.temperature"
+                   [color]="wk.mpcs:wz.temperature" | step('0: primary, 18: ok, 20: yellow, 22: orange, 30: danger')"
+                   width="130" offset-y="10"
+                   type="handle" min="16" max="25" decimals="1" unit="°C" readonly has-value-text></ftui-knob>
+      </ftui-grid-tile>
+
+      <!-- AussenTemp-->
+      
+      <ftui-grid-tile row="5" col="2" height="3" width="2" shape="round">
+        <ftui-label size="2">Außen</ftui-label>
+        <ftui-knob [value]="wetter:temperature"
+                   [color]="wetter:temperature | step('-99: primary, 10: ok, 25: warning, 30: danger')"
+                   width="130" offset-y="10"
+                   type="handle" min="-10" max="30" decimals="1" unit="°C" readonly has-value-text></ftui-knob>
+      </ftui-grid-tile>
+      
+
+
+      <!--
+      <ftui-grid-tile row="3" col="4" height="2" width="3" shape="round">
+        
+        <ftui-column>
+          <ftui-row>
+            <ftui-label>Humidity</ftui-label>
+            <ftui-label class="size-7" [text]="THSensorWZ:humidity">
+              <span slot="unit" class="size-0">%</span>
+            </ftui-label>
+          </ftui-row>
+          <ftui-chart class="row" width="150px" height="75px">
+            <ftui-chart-data fill log="FileLog_THSensorWZ" spec="4:THSensorWZ.humidity"
+                             [update]="THSensorWZ:state:time"></ftui-chart-data>
+          </ftui-chart>
+        </ftui-column>
+        
+      </ftui-grid-tile>
+    -->
+
+      <!-- CO² -->
+      <!--
+      <ftui-grid-tile row="3" col="8" height="2" width="2" shape="round"
+                      [color]="WCLuft | step('0:ok, 1000:warning, 2000:danger')"
+                      [title]="WCLuft:state:time">
+        <ftui-column width="80%" padding="0 1em" align-items="left">
+          <ftui-label id="co2" size="5">CO²</ftui-label>
+          <ftui-label size="7" [text]="WCLuft | part(1) | toInt()">
+            <span slot="unit" class="size-2">ppm</span>
+          </ftui-label>
+        </ftui-column>
+      </ftui-grid-tile>
+      -->
+      <!-- Licht -->
+       <!--
+      <ftui-grid-tile row="3" col="10" height="2" width="2" shape="round"
+                      [color]="AllLights:count | step('0: ok, 3:yellow, 8:alert')">
+        <ftui-label size="3">Licht</ftui-label>
+        <ftui-icon size="3"
+                   [name]="AllLights:count | step('0: lightbulb, 1: lightbulb-on')">
+        </ftui-icon>
+        <ftui-label [text]="AllLights:count"></ftui-label>
+      </ftui-grid-tile>
+      -->
+      <ftui-grid-tile row="5" col="4" height="3" width="4">
+        <ftui-content file="examples/contents/content-weather-2-day.html"></ftui-content>
+      </ftui-grid-tile>
+
+      <!-- HomeStatus -->
+      <!--
+      <ftui-grid-tile row="10" col="2" height="1" width="6">
+        <ftui-segment [(value)]="HomeStatus">
+          <ftui-segment-button value="1">
+            <ftui-icon name="home"></ftui-icon>
+          </ftui-segment-button>
+          <ftui-segment-button value="2">
+            <ftui-icon name="bed"></ftui-icon>
+          </ftui-segment-button>
+          <ftui-segment-button value="3">
+            <ftui-icon name="road"></ftui-icon>
+          </ftui-segment-button>
+          <ftui-segment-button value="4">
+            <ftui-icon name="plane"></ftui-icon>
+          </ftui-segment-button>
+        </ftui-segment>
+      </ftui-grid-tile>
+      -->
+      <ftui-grid-tile row="8" col="2" height="3" width="2">
+        <ftui-label size="3">Gäste Wlan</ftui-label>
+        <ftui-button [value]="fb7590:box_guestWlan" (value)="fb7590:guestWlan" [fill]="fb7590:box_guestWlan | map('off:outline, on:solid')">
+          <ftui-icon path="../images/openautomation" name="it_router" size="3">
+        </ftui-button>
+        <ftui-badge [text]="fb7590:box_guestWlanRemain"></ftui-badge>
+      </ftui-grid-tile>
+    </ftui-tab-view>
+
+    <ftui-tab-view id="View2">
+      <ftui-grid-tile row="1" col="2" height="5" width="9">
+        <div class="size-10">Tab2</div>
+      </ftui-grid-tile>
+    </ftui-tab-view>
+
+    <ftui-tab-view id="View3">
+      <ftui-grid-tile row="1" col="2" height="5" width="9">
+        <div class="size-10">Tab3</div>
+      </ftui-grid-tile>
+    </ftui-tab-view>
+
+    <ftui-tab-view id="View4">
+      <ftui-grid-tile row="1" col="2" height="5" width="9">
+        <div class="size-10">Tab4</div>
+      </ftui-grid-tile>
+    </ftui-tab-view>
+
+    <ftui-tab-view id="View5">
+      <ftui-grid-tile row="1" col="2"  height="3" width="3" shape="round">
+        <ftui-grid-header>Heizung</ftui-grid-header>
+        <ftui-thermostat class="size-1" style="--thermostat-zoom-value-left:-40%;--thermostat-zoom-value-top:0%;--thermostat-zoom-value-size:2em;"
+        [(value)]="bu.Heizung_Clima:desired-temp"
+        [temp]="bu.Heizung_Clima:measured-temp"
+        [battery]="bu.Heizung:batteryLevel | scale(2.0, 2.6, 1, 100) |  append(' %')"
+        battery-icon="step('-99:battery-0, 20:battery-2, 51: battery')"
+        battery-icon-color="step('-99:red, 20:yellow, 51:green')"
+        [valve]="bu.Heizung_Clima:ValvePosition"
+        size="100"
+        degrees="270"
+        rotation="-90"
+        step="0.5"
+        tick="30"
+        min="12"
+        max="25"
+        movegradients="4"
+        fadegradient="20"
+        unit=" °C"
+        has-old-style
+        has-zoom
+        has-arc-tick
+        lowcolor="0,0,255"
+        temp-decimals="2"
+        >
+        </ftui-thermostat>
+        <ftui-label [text]="bu.Heizung_Clima:measured-temp">Temperatur</ftui-label>
+    </ftui-grid-tile>
+
+    <ftui-grid-tile col="2" row="4" height="8" shape="round">
+      <ftui-grid-header>Licht</ftui-grid-header>
+      <ftui-row >
+          <ftui-column  margin="2"> 
+              <ftui-label>Lichtvoute</ftui-label>
+          </ftui-column>
+          <ftui-column>
+              <ftui-switch [value]="Lichtvoute" (value)="Lichtvoute" texts='on,off'></ftui-switch>
+          </ftui-column>
+      </ftui-row>
+  
+      <ftui-row height="12">
+          <ftui-column>
+              <ftui-colorpicker  [hex]="Lichtvoute:rgb" (hex)="replace('#','') | Lichtvoute:rgb" 
+                                  layout="wheel,valueSlider"></ftui-colorpicker>
+              </ftui-column>
+      </ftui-row>
+      <ftui-row >
+          <ftui-column>
+              <ftui-colorpicker [brightness]="Lichtvoute:gain" (brightness)="toInt() | Lichtvoute:gain"
+                                  layout="valueSlider">Farbe</ftui-colorpicker>
+          </ftui-column> 
+          <ftui-column>
+              <ftui-colorpicker [brightness]="Lichtvoute:white"  (brightness)="toInt() | Lichtvoute:white" 
+                                  layout="valueSlider">Weiß</ftui-colorpicker>
+          <ftui-column>
+      </ftui-row>
+      
+      <ftui-row margin="2">
+          <ftui-column>
+              <ftui-label>Decke Sven</ftui-label>
+          </ftui-column>
+          <ftui-column>
+              <ftui-label>Decke Johanna</ftui-label>
+          </ftui-column>
+          <ftui-column>
+              <ftui-label>Deckenleuchte</ftui-label>
+          </ftui-column>
+      </ftui-row>
+  
+      <ftui-row >
+          <ftui-column>
+              <ftui-switch [(value)]="Downlight_Sven" texts='on,off'></ftui-switch>
+          </ftui-column>
+  
+          <ftui-column>
+              <ftui-switch [(value)]="Downlight_Johanna" texts='on,off'></ftui-switch>
+          </ftui-column>
+  
+          <ftui-column>
+              <ftui-switch [(value)]="bu.Deckenleuchte" texts='on,off'></ftui-switch>
+          </ftui-column>
+      </ftui-row>
+  
+      <ftui-row>
+          <ftui-column>          
+              <ftui-colorpicker layout="valueSlider"
+              (brightness)="toInt() | Downlight_Sven:pct"
+              [brightness]="Downlight_Sven:brightness"></ftui-colorpicker>
+          </ftui-column>
+          <ftui-column>
+              <ftui-colorpicker layout="valueSlider"
+              (brightness)="toInt() | Downlight_Johanna:pct"
+              [brightness]="Downlight_Johanna:brightness"></ftui-colorpicker>
+          </ftui-column>
+          <ftui-column height=6>
+              <ftui-colorpicker layout="kelvinSlider" 
+              (kelvin)="scale(2200,11000,500,154) | toInt() |   bu.Deckenleuchte:ct"
+              [kelvin]="bu.Deckenleuchte:ct | toInt() | scale(154,454,11000,2200)"></ftui-colorpicker>
+              <ftui-colorpicker layout="valueSlider"
+              (brightness)="scale(1,100,1,255) | toInt() | bu.Deckenleuchte:brightness"
+              [brightness]="bu.Deckenleuchte:brightness | scale(1,255,1,100)"></ftui-colorpicker>
+              
+          </ftui-column>
+      </ftui-row>
+  </ftui-grid-tile>
+  
+  <ftui-grid-tile col="6" row="1" height="2" width="2">
+      <ftui-grid-header>Balkontür</ftui-grid-header>
+      <ftui-row>
+          <ftui-column>
+              <ftui-label [text]="Tür"></ftui-label>
+              <ftui-icon path="images/openautomation" class="size-5" [name]="bu.Tuer | map('open: fts_door_open, closed: fts_door')"
+                  [color]="bu.Tuer | map('open: danger, closed: green')"></ftui-icon>
+          </ftui-column>
+      </ftui-row>
+  </ftui-grid-tile>
+  
+  <ftui-grid-tile col="8" row="1" height="2" width="2">
+      <ftui-grid-header>Markise</ftui-grid-header>
+      <ftui-content file="content_rolladenMarkise.html" name="bu.Markise" title="Markise" type="sunblind"></ftui-content>
+  </ftui-grid-tile>
+  
+  <ftui-grid-tile col="10" row="1" height="2" width="2">
+      <ftui-grid-header>Rolladen</ftui-grid-header>
+      <ftui-content file="content_rolladenMarkise.html" name="bu.Rolladen" title="Rolladen" type="shutter"></ftui-content>
+  </ftui-grid-tile>
+    <!--
+      <ftui-content file="content_buero.html"></ftui-content>
+  -->
+    
+    </ftui-tab-view>
+
+  </ftui-grid>
+  
+
+</body>
+
+</html>

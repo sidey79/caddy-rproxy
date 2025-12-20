@@ -1,0 +1,42 @@
+<ftui-row height="90%">
+  <ftui-column width="50%">
+    <ftui-row>
+      <ftui-label>Heute</ftui-label>
+    </ftui-row>
+    <ftui-row>
+      <ftui-weather provider="proplanta" [condition]="wetter:condition" size="5"></ftui-weather>
+    </ftui-row>
+    <ftui-row>
+      <ftui-label [text]="wetter:summary" scroll height="2em"></ftui-label>
+    </ftui-row>
+    <ftui-row width="80%">
+      <ftui-label [text]="wetter:temperature"><span slot="unit">°C</span></ftui-label>
+      <!--<ftui-label [text]="wetter:fc1_tempHigh" size="4" class=""><span slot="unit">°C</span>-->
+      </ftui-label>
+    </ftui-row>
+    <ftui-row width="80%">
+      <ftui-label [text]="wetter:fc0_Rh00" color="blue"><span slot="unit">%</span></ftui-label>
+      <ftui-label [text]="wetter:rain_1h" color="blue"><span slot="unit">mm</span></ftui-label>
+    </ftui-row>
+  </ftui-column>
+  <ftui-column width="50%">
+    <ftui-row>
+      <ftui-label>Morgen</ftui-label>
+    </ftui-row>
+    <ftui-row>
+      <ftui-weather [condition]="wetter:condition" size="5"></ftui-weather>
+    </ftui-row>
+    <ftui-row>
+      <ftui-label [text]="wetter:condition" scroll height="2em"></ftui-label>
+    </ftui-row>
+    <ftui-row width="80%">
+      <ftui-label [text]="wetter:fc1_low_c" ><span slot="unit">°C</span></ftui-label>
+      <ftui-label [text]="wetter:fc1_high_c" size="4" class=""><span slot="unit">°C</span>
+      </ftui-label>
+    </ftui-row>
+    <ftui-row width="80%">
+      <ftui-label [text]="wetter:fc1_Rh00" color="blue"><span slot="unit">%</span></ftui-label>
+      <ftui-label [text]="wetter:fc1_rain" color="blue"><span slot="unit">mm</span></ftui-label>
+    </ftui-row>
+  </ftui-column>
+</ftui-row>

@@ -1,0 +1,32 @@
+<ftui-row>
+  <ftui-column>
+    <ftui-circlemenu direction="bottom-half">
+            <ftui-icon path="images/openautomation" name="fts_{{type}}" class="size-5" [color]="{{name}}:pct | step('0:medium, 1:brown, 100: green')"></ftui-icon>
+
+            <ftui-button  shape="circle" color="secondary" fill="solid"  states="100" (value)="{{name}} pct">
+              <ftui-icon path="images/openautomation"  name="fts_shutter_up" size="3"
+                        [color]="{{name}}:pct | map('100:gray, .*:white')"></ftui-icon>
+            </ftui-button>
+
+            <ftui-button  shape="circle" color="secondary" fill="solid"  states="50" (value)="{{name}} pct"> 
+              <ftui-icon size="3" path="images/openautomation" 
+              [color]="{{name}}:pct | map('50:gray, .*:white')" name="fts_shutter_50"></ftui-icon>
+            </ftui-button>
+
+            <ftui-button  shape="circle" color="secondary" fill="solid" states="0" (value)="{{name}} pct">
+              <ftui-icon size="3" path="images/openautomation"
+              name="fts_shutter_down"
+              [color]="{{name}}:pct | map('0:gray, .*:white')"></ftui-icon>
+            </ftui-button>
+    </ftui-circlemenu>
+    
+    <ftui-label [text]="{{name}}:pct" unit="%"></ftui-label>
+    <!--
+    <ftui-button  shape="circle" color="secondary" fill="solid" [value]="{{name}}:pct">
+      <ftui-icon size="3" path="images/openautomation"
+      [name]="{{name}}:pct | step('0:fts_shutter_100, 1:fts_shutter_90, 11:fts_shutter_80, 21:fts_shutter_70, 31:fts_shutter_60, 41:fts_shutter_50, 51:fts_shutter_40, 61:fts_shutter_30, 71:fts_shutter_20, 81:fts_shutter_10')"
+      [color]="{{name}}:pct | step('0:light, 1:brown, 100: green')"></ftui-icon>
+    </ftui-button>
+    -->
+  </ftui-column>
+</ftui-row>
