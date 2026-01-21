@@ -1,0 +1,127 @@
+<ftui-grid-tile row="1" col="2"  height="3" width="1" shape="round">
+    <ftui-grid-header>Heizung</ftui-grid-header>
+    <ftui-thermostat class="size-1" style="--thermostat-zoom-value-left:-40%;--thermostat-zoom-value-top:0%;--thermostat-zoom-value-size:2em;"
+    [(value)]="bu.Heizung_Clima:desired-temp"
+    [temp]="bu.Heizung_Clima:measured-temp"
+    [battery]="bu.Heizung:batteryLevel | scale(2.0, 2.6, 1, 100) |  append(' %')"
+    battery-icon="step('-99:battery-0, 20:battery-2, 51: battery')"
+    battery-icon-color="step('-99:red, 20:yellow, 51:green')"
+    [valve]="bu.Heizung_Clima:ValvePosition"
+    size="100"
+    degrees="270"
+    rotation="-90"
+    step="0.5"
+    tick="30"
+    min="12"
+    max="25"
+    movegradients="4"
+    fadegradient="20"
+    unit=" °C"
+    has-old-style
+    has-zoom
+    has-arc-tick
+    lowcolor="0,0,255"
+    temp-decimals="2"
+    >
+    </ftui-thermostat>
+    <ftui-label [text]="bu.Heizung_Clima:measured-temp">Temperatur</ftui-label>
+</ftui-grid-tile>
+<!--
+<ftui-grid-tile col="2" row="4" height="5" shape="round">
+    <ftui-grid-header>Licht</ftui-grid-header>
+    <ftui-row >
+        <ftui-column  margin="2"> 
+            <ftui-label>Lichtvoute</ftui-label>
+        </ftui-column>
+        <ftui-column>
+            <ftui-switch [value]="Lichtvoute" (value)="Lichtvoute" texts='on,off'></ftui-switch>
+        </ftui-column>
+    </ftui-row>
+
+    <ftui-row >
+        <ftui-column>
+            <ftui-colorpicker  [hex]="Lichtvoute:rgb" (hex)="replace('#','') | Lichtvoute:rgb" 
+                                layout="wheel,valueSlider"></ftui-colorpicker>
+            </ftui-column>
+    </ftui-row>
+    <ftui-row >
+        <ftui-column>
+            <ftui-colorpicker [brightness]="Lichtvoute:gain" (brightness)="toInt() | Lichtvoute:gain"
+                                layout="valueSlider">Farbe</ftui-colorpicker>
+        </ftui-column> 
+        <ftui-column>
+            <ftui-colorpicker [brightness]="Lichtvoute:white"  (brightness)="toInt() | Lichtvoute:white" 
+                                layout="valueSlider">Weiß</ftui-colorpicker>
+        <ftui-column>
+    </ftui-row>
+    
+    <ftui-row margin="2">
+        <ftui-column>
+            <ftui-label>Decke Sven</ftui-label>
+        </ftui-column>
+        <ftui-column>
+            <ftui-label>Decke Johanna</ftui-label>
+        </ftui-column>
+        <ftui-column>
+            <ftui-label>Deckenleuchte</ftui-label>
+        </ftui-column>
+    </ftui-row>
+
+    <ftui-row >
+        <ftui-column>
+            <ftui-switch [(value)]="Downlight_Sven" texts='on,off'></ftui-switch>
+        </ftui-column>
+
+        <ftui-column>
+            <ftui-switch [(value)]="Downlight_Johanna" texts='on,off'></ftui-switch>
+        </ftui-column>
+
+        <ftui-column>
+            <ftui-switch [(value)]="kz.Deckenleuchte" texts='on,off'></ftui-switch>
+        </ftui-column>
+    </ftui-row>
+
+    <ftui-row>
+        <ftui-column>          
+            <ftui-colorpicker layout="valueSlider"
+            (brightness)="toInt() | Downlight_Sven:pct"
+            [brightness]="Downlight_Sven:brightness"></ftui-colorpicker>
+        </ftui-column>
+        <ftui-column>
+            <ftui-colorpicker layout="valueSlider"
+            (brightness)="toInt() | Downlight_Johanna:pct"
+            [brightness]="Downlight_Johanna:brightness"></ftui-colorpicker>
+        </ftui-column>
+        <ftui-column height=6>
+            <ftui-colorpicker layout="kelvinSlider" 
+            (kelvin)="scale(2200,11000,500,154) | toInt() |   kz.Deckenleuchte:ct"
+            [kelvin]="kz.Deckenleuchte:ct | toInt() | scale(154,454,11000,2200)"></ftui-colorpicker>
+            <ftui-colorpicker layout="valueSlider"
+            (brightness)="scale(1,100,1,255) | toInt() | kz.Deckenleuchte:brightness"
+            [brightness]="kz.Deckenleuchte:brightness | scale(1,255,1,100)"></ftui-colorpicker>
+            
+        </ftui-column>
+    </ftui-row>
+</ftui-grid-tile>
+
+<ftui-grid-tile col="2" row="9" height="1" width="2">
+    <ftui-grid-header>Balkontür</ftui-grid-header>
+    <ftui-row>
+        <ftui-column>
+            <ftui-label [text]="Tür"></ftui-label>
+            <ftui-icon path="images/openautomation" class="size-5" [name]="kz.Tuer | map('open: fts_door_open, closed: fts_door')"
+                [color]="kz.Tuer | map('open: danger, closed: green')"></ftui-icon>
+        </ftui-column>
+    </ftui-row>
+</ftui-grid-tile>
+
+<ftui-grid-tile col="2" row="11" height="2" width="2">
+    <ftui-grid-header>Markise</ftui-grid-header>
+    <ftui-content file="content_rolladenMarkise.html" name="kz.Markise" title="Markise" type="sunblind"></ftui-content>
+</ftui-grid-tile>
+
+<ftui-grid-tile col="2" row="13" height="2" width="2">
+    <ftui-grid-header>Rolladen</ftui-grid-header>
+    <ftui-content file="content_rolladenMarkise.html" name="kz.Rolladen" title="Rolladen" type="shutter"></ftui-content>
+</ftui-grid-tile>
+-->

@@ -1,0 +1,170 @@
+{
+}
+
+(missing_mTLS_cert) {
+        @missing_mTLS_cert {
+                expression {tls_client_subject} == null
+        }
+}
+
+(valid_mTLS_cert) {
+        @valid_mTLS_cert {
+                expression {tls_client_serial} == "3"
+        }
+}
+
+(admin_user) {
+        {$CADDY_ADMIN_USER} {$CADDY_ADMIN_PASSWORD}
+}
+
+(private_auth) {
+        import missing_mTLS_cert
+        basicauth @missing_mTLS_cert {
+                import admin_user
+        }
+}
+
+(mTLS_required) {
+        tls {
+                client_auth {
+                        mode require_and_verify
+                        trust_pool file {
+                           pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
+}
+
+(local_ip_ranges) {
+   not client_ip 10.2.11.0/24
+}
+
+
+# use this import if you want to be able to fallback to basic auth
+(mTLS_optional) {
+        tls {
+                client_auth {
+                        mode verify_if_given
+                        trust_pool file {
+                           pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
+}
+(logging_info) {
+        log {
+                level INFO
+        }
+}
+#pi2 {
+#  tls internal
+#  import mTLS_optional
+#  import private_auth
+#  import valid_mTLS_cert
+#  reverse_proxy @valid_mTLS_cert 10.2.11.2:8083
+#}
+
+
+fhem.{$CADDY_SUBDOMAIN} {
+        import mTLS_required
+        encode gzip
+        reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
+                transport http {
+                        tls_server_name zeus.fritz.box
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
+
+        import logging_info
+}
+
+
+dms.{$CADDY_SUBDOMAIN} {
+        import mTLS_required
+        encode gzip
+        reverse_proxy http://paperless-ngx-webserver-1.network_backend_net:8000
+        import logging_info
+}
+
+
+# Uncomment this in addition with the import admin_redir statement allow access to the admin interface only from local networks
+(admin_redir) {
+        @admin {
+                path /admin*
+                not remote_ip private_ranges
+        }
+        redir @admin /
+}
+
+bitwarden.{$CADDY_SUBDOMAIN} {
+        encode gzip
+        import admin_redir
+	route {
+		@tasks path /api/tasks
+		handle @tasks {
+			header Content-Type application/json
+			respond `{"data":[],"object":"list"}` 200
+		}
+	}
+        # If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
+        header / {
+                # Enable HTTP Strict Transport Security (HSTS)
+                Strict-Transport-Security "max-age=31536000;"
+                # Disable cross-site filter (XSS)
+                X-XSS-Protection "0"
+                # Disallow the site to be rendered within a frame (clickjacking protection)
+                X-Frame-Options "DENY"
+                # Prevent search engines from indexing (optional)
+                X-Robots-Tag "noindex, nofollow"
+                # Disallow sniffing of X-Content-Type-Options
+                X-Content-Type-Options "nosniff"
+                # Server name removing
+                -Server
+                # Remove X-Powered-By though this shouldnt be an issue, better opsec to remove
+                -X-Powered-By
+                # Remove Last-Modified because etag is the same and is as effective
+                -Last-Modified
+        }
+        reverse_proxy http://bitwarden.network_backend_net:8889 {
+                header_up X-Real-IP {remote_host}
+        }
+        import logging_info
+}
+
+caddy.{$CADDY_SUBDOMAIN2} {
+        import mTLS_required
+        encode gzip
+        reverse_proxy https://fhem-docker-test-fhem-1.network_backend_net:8083 {
+                transport http {
+                        tls_insecure_skip_verify
+                }
+        }
+        import logging_info
+}
+
+ui.{$CADDY_SUBDOMAIN} {
+        import mTLS_required
+        root * /srv/ftui
+        rewrite /images/* /fhem{uri}
+
+        reverse_proxy /fhem/images/* https://fhem-fhem-1.network_backend_net:8088 {
+               transport http {
+                        tls_server_name zeus.fritz.box
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
+        file_server
+        #import logging_info
+        log {
+                level DEBUG
+        }
+}
+
+tabbyml.{$CADDY_SUBDOMAIN} {
+        reverse_proxy http://10.2.11.57:8080
+        import logging_info
+}
