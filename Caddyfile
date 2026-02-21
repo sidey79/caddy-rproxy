@@ -192,7 +192,6 @@ workflow.{$CADDY_SUBDOMAIN}:45678 {
 		}
 	}
 	import logging_info
-	respond "403 Forbidden" 403
 }
 
 
