@@ -180,7 +180,7 @@ ui.{$CADDY_SUBDOMAIN} {
 workflow.{$CADDY_SUBDOMAIN}:45678 {
 	reverse_proxy /webhook* https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
-				tls_server_name n8n.fritz.box
+				tls_server_name n8n
 				tls_trust_pool file {
 						pem_file /etc/ssl/ca/certs/ca.crt
 				}
@@ -188,7 +188,7 @@ workflow.{$CADDY_SUBDOMAIN}:45678 {
 	}
 	reverse_proxy /webhook-test* https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
-			tls_server_name n8n.fritz.box
+			tls_server_name n8n
 			tls_trust_pool file {
 				pem_file /etc/ssl/ca/certs/ca.crt
 			}
@@ -208,6 +208,9 @@ n8n.{$CADDY_SUBDOMAIN3} {
 	reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
 			tls_server_name n8n
+			tls_trust_pool file {
+				pem_file /etc/ssl/ca/certs/ca.crt
+			}
 	
 	}
 }
