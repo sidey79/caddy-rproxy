@@ -176,13 +176,13 @@ ui.{$CADDY_SUBDOMAIN} {
 	}
 }
 
-@n8nWebHooks {
-	path /webhook/*
-	path /webhook-test/*
-	path /webhook-waiting/*
-}
 
 workflow.{$CADDY_SUBDOMAIN}:45678 {
+	@n8nWebHooks {
+		path /webhook/*
+		path /webhook-test/*
+		path /webhook-waiting/*
+	}
 	reverse_proxy @n8nWebHooks https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
 				tls_server_name n8n
