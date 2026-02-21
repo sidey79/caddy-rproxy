@@ -4,11 +4,12 @@
 {
     pki {
         ca local {
-            name "Root CA"
-            # Path to your custom root CA certificate
-            root_ca /etc/ssl/ca/certs/ca.crt
-            # Path to your custom root CA private key
-            root_key /etc/ssl/ca/certs/ca.key
+                name "Root CA"
+      	        root {
+				format pem_file
+				cert /etc/ssl/ca/certs/ca.crt
+				key /etc/ssl/ca/certs/ca.key
+	        }      # Path to your custom root CA certificate
         }
     }
 }
