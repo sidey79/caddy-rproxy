@@ -177,7 +177,7 @@ ui.{$CADDY_SUBDOMAIN} {
 }
 
 
-workflow.{$CADDY_SUBDOMAIN}:45678 {
+workflow.{$CADDY_SUBDOMAIN} {
 	@n8nWebHooks {
 		path /webhook/*	/webhook-test/* /webhook-waiting/*
 	}
