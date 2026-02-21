@@ -3,7 +3,7 @@
 
 {
     pki {
-		ca myrootca {
+		ca internal {
 			name "Root CA"
 			root {
 				format pem_file
@@ -204,11 +204,6 @@ workflow.{$CADDY_SUBDOMAIN}:45678 {
 
 
 n8n.{$CADDY_SUBDOMAIN3} {
-	tls {
-		internal {
-			ca myrootca
-			sign_with_root
-		}
-    }
+	tls internal {}
 	reverse_proxy http://n8n-n8n-1.network_backend_net:5678 {
 }
