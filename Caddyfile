@@ -199,7 +199,7 @@ workflow.{$CADDY_SUBDOMAIN}:45678 {
         @non_webhooks {
                 not path /webhook* /webhook-test*
         }
-        respond @block_non_webhooks "403 Forbidden" 403
+        respond @non_webhooks "403 Forbidden" 403
 }
 
 
