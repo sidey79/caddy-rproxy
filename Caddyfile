@@ -204,6 +204,6 @@ workflow.{$CADDY_SUBDOMAIN}:45678 {
 
 
 n8n.{$CADDY_SUBDOMAIN3} {
-	tls internal {}
+	tls internal 
 	reverse_proxy http://n8n-n8n-1.network_backend_net:5678 {
 }
