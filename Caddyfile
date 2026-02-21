@@ -1,6 +1,18 @@
 {
 }
 
+{
+    pki {
+        ca local {
+            name "Root CA"
+            # Path to your custom root CA certificate
+            root_ca /etc/ssl/ca/certs/ca.crt
+            # Path to your custom root CA private key
+            root_key /etc/ssl/ca/certs/ca.key
+        }
+    }
+}
+
 (missing_mTLS_cert) {
         @missing_mTLS_cert {
                 expression {tls_client_subject} == null
@@ -36,7 +48,7 @@
 }
 
 (local_ip_ranges) {
-   not client_ip 10.2.11.0/24
+   not remote_ip 10.2.11.0/24
 }
 
 
@@ -164,7 +176,35 @@ ui.{$CADDY_SUBDOMAIN} {
         }
 }
 
-tabbyml.{$CADDY_SUBDOMAIN} {
-        reverse_proxy http://10.2.11.57:8080
+workflow.{$CADDY_SUBDOMAIN}:45678 {
+        reverse_proxy /webhook* http://n8n-n8n-1.network_backend_net:5678 {
+                transport http {
+                        tls_server_name zeus.fritz.box
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
+        reverse_proxy /webhook-test* http://n8n-n8n-1.network_backend_net:5678 {
+                transport http {
+                        tls_server_name zeus.fritz.box
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/ca.crt
+                        }
+                }
+        }
         import logging_info
+
+        @non_webhooks {
+                not path /webhook* /webhook-test*
+        }
+        respond @block_non_webhooks "403 Forbidden" 403
+}
+
+
+n8n.{$CADDY_SUBDOMAIN3} {
+        tls internal {
+                sign_with_root 
+        }
+        reverse_proxy http://n8n-n8n-1.network_backend_net:5678 {
 }
