@@ -179,9 +179,7 @@ ui.{$CADDY_SUBDOMAIN} {
 
 workflow.{$CADDY_SUBDOMAIN}:45678 {
 	@n8nWebHooks {
-		path /webhook/*
-		path /webhook-test/*
-		path /webhook-waiting/*
+		path /webhook/*	/webhook-test/* /webhook-waiting/*
 	}
 	reverse_proxy @n8nWebHooks https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
