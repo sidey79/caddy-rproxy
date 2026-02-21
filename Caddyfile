@@ -8,7 +8,7 @@
 			root {
 				format pem_file
 				cert /etc/ssl/ca/certs/ca.crt
-				key /etc/ssl/ca/certs/ca.key
+				#key /etc/ssl/ca/certs/ca.key
 			}      # Path to your custom root CA certificate
         }
     }
