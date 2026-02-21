@@ -1,9 +1,6 @@
 {
 	acme_ca https://acme.zerossl.com/v2/DV90
 	email   sven@blausee.eu
-}
-
-{
     pki {
 		ca internal {
 			name "Root CA"
