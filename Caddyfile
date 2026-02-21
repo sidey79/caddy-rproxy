@@ -146,16 +146,16 @@ bitwarden.{$CADDY_SUBDOMAIN} {
 	import logging_info
 }
 
-caddy.{$CADDY_SUBDOMAIN2} {
-	import mTLS_required
-	encode gzip
-	reverse_proxy https://fhem-docker-test-fhem-1.network_backend_net:8083 {
-			transport http {
-					tls_insecure_skip_verify
-			}
-	}
-	import logging_info
-}
+# caddy.{$CADDY_SUBDOMAIN2} {
+# 	import mTLS_required
+# 	encode gzip
+# 	reverse_proxy https://fhem-docker-test-fhem-1.network_backend_net:8083 {
+# 			transport http {
+# 					tls_insecure_skip_verify
+# 			}
+# 	}
+# 	import logging_info
+# }
 
 ui.{$CADDY_SUBDOMAIN} {
 	import mTLS_required
