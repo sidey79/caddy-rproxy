@@ -207,7 +207,7 @@ n8n.{$CADDY_SUBDOMAIN3} {
 	tls internal 
 	reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
-			tls_server_name n8n.fritz.box
+			tls_server_name n8n
 	
 	}
 }
