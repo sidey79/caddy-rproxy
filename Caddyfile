@@ -176,8 +176,14 @@ ui.{$CADDY_SUBDOMAIN} {
 	}
 }
 
+@n8nWebHooks {
+	path /webhook/*
+	path /webhook-test/*
+	path /webhook-waiting/*
+}
+
 workflow.{$CADDY_SUBDOMAIN}:45678 {
-	reverse_proxy /webhook* https://n8n-n8n-1.network_backend_net:5678 {
+	reverse_proxy @n8nWebHooks https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
 				tls_server_name n8n
 				tls_trust_pool file {
@@ -185,20 +191,8 @@ workflow.{$CADDY_SUBDOMAIN}:45678 {
 				}
 		}
 	}
-	reverse_proxy /webhook-test* https://n8n-n8n-1.network_backend_net:5678 {
-		transport http {
-			tls_server_name n8n
-			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/ca.crt
-			}
-		}
-	}
 	import logging_info
-
-	@non_webhooks {
-			not path /webhook* /webhook-test*
-	}
-	respond @non_webhooks "403 Forbidden" 403
+	respond not @n8nWebHooks "403 Forbidden" 403
 }
 
 
