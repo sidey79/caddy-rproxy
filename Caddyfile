@@ -178,6 +178,7 @@ ui.{$CADDY_SUBDOMAIN} {
 
 
 workflow.{$CADDY_SUBDOMAIN} {
+	import mTLS_required
 	@n8nWebHooks {
 		path /webhook/*	/webhook-test/* /webhook-waiting/*
 	}
