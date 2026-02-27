@@ -2,13 +2,18 @@
 	acme_ca https://acme.zerossl.com/v2/DV90
 	email   sven@blausee.eu
     pki {
-		ca internal {
-			name "Root CA"
-			#root {
-				#format pem_file
-				#cert /etc/ssl/ca/certs/ca.crt
-				#key /etc/ssl/ca/certs/ca.key
-			#}      # Path to your custom root CA certificate
+		ca blausee_ca {
+			root {
+				format pem_file
+				cert /etc/ssl/ca/certs/blausee_ca.crt
+				key /etc/ssl/ca/certs/blausee_ca.key
+			}
+			intermediate {
+					format pem_file
+					cert /var/certs/sub-ca.crt
+					key /var/certs/sub-ca.key
+			}
+
         }
     }
 }
@@ -41,7 +46,7 @@
 		client_auth {
 			mode require_and_verify
 			trust_pool file {
-				pem_file /etc/ssl/ca/certs/ca.crt
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
 			}
 		}
 	}
@@ -58,7 +63,7 @@
 		client_auth {
 			mode verify_if_given
 			trust_pool file {
-				pem_file /etc/ssl/ca/certs/ca.crt
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
 			}
 		}
 	}
