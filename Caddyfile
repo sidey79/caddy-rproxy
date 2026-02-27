@@ -198,7 +198,11 @@ workflow.{$CADDY_SUBDOMAIN} {
 
 
 n8n.{$CADDY_SUBDOMAIN3} {
-	tls internal 
+	tls {
+		issuer internal {
+			ca blausee_ca
+		}
+	}
 	reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
 		transport http {
 			tls_server_name n8n
