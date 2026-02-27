@@ -10,9 +10,9 @@ services:
       - ./caddy_config:/config
       - /opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/blausee_ca.crt:ro
       - /opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/blausee-ca.crl:ro
-      - /opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/blausee_ca.key
-      - /opt/docker/rootca/intermediate/caddy-intermediate.crt.pem:/etc/ssl/ca/certs/caddy-intermediate.crt:ro
-      - /opt/docker/rootca/intermediate/caddy-intermediate.key.pem:/etc/ssl/ca/private/caddy-intermediate.key:ro
+      #- /opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/blausee_ca.key
+      - /opt/docker/rootca/intermediate/caddy-intermediate.crt.pem:/etc/ssl/ca/certs/caddy-intermediate.crt
+      - /opt/docker/rootca/intermediate/caddy-intermediate.key.pem:/etc/ssl/ca/private/caddy-intermediate.key
     environment:
       CADDY_SUBDOMAIN: $CADDY_SUBDOMAIN
       CADDY_SUBDOMAIN2: $CADDY_SUBDOMAIN2
