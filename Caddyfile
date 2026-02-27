@@ -169,7 +169,7 @@ ui.{$CADDY_SUBDOMAIN} {
 			transport http {
 					tls_server_name zeus.fritz.box
 					tls_trust_pool file {
-							pem_file /etc/ssl/ca/certs/ca.crt
+							pem_file /etc/ssl/ca/certs/blausee_ca.crt
 					}
 			}
 	}
@@ -190,7 +190,7 @@ workflow.{$CADDY_SUBDOMAIN} {
 		transport http {
 				tls_server_name n8n
 				tls_trust_pool file {
-						pem_file /etc/ssl/ca/certs/ca.crt
+						pem_file /etc/ssl/ca/certs/blausee_ca.crt
 				}
 		}
 	}
@@ -204,7 +204,7 @@ n8n.{$CADDY_SUBDOMAIN3} {
 		transport http {
 			tls_server_name n8n
 			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/ca.crt
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
 			}
 	
 	}
