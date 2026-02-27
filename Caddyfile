@@ -3,18 +3,17 @@
 	email   sven@blausee.eu
     pki {
 		ca blausee_ca {
-			root {
-				format pem_file
-				cert /etc/ssl/ca/certs/blausee_ca.crt
-				key /etc/ssl/ca/certs/blausee_ca.key
-			}
-			intermediate {
-					format pem_file
-					cert /var/certs/sub-ca.crt
-					key /var/certs/sub-ca.key
-			}
-
-        }
+		root {
+			format pem_file
+			cert /etc/ssl/ca/certs/blausee_ca.crt
+			key /etc/ssl/ca/certs/blausee_ca.key
+		}
+		intermediate {
+			format pem_file
+			cert :/etc/ssl/ca/certs/caddy-intermediate.crt
+			key :/etc/ssl/ca/certs/caddy-intermediate.key
+		}
+		}
     }
 }
 
