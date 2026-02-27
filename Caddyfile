@@ -6,7 +6,7 @@
 		root {
 			format pem_file
 			cert /etc/ssl/ca/certs/blausee_ca.crt
-			key /etc/ssl/ca/private/blausee_ca.key
+			// key /etc/ssl/ca/private/blausee_ca.key
 		}
 		intermediate {
 			format pem_file
