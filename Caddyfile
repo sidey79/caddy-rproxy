@@ -8,11 +8,11 @@
 				cert /etc/ssl/ca/certs/blausee_ca.crt
 
 			}
-			// intermediate {
-			// 	format pem_file
-			// 	cert /etc/ssl/ca/certs/caddy-intermediate.crt
-			// 	key /etc/ssl/ca/certs/caddy-intermediate.key
-			// }
+#			intermediate {
+#			 	format pem_file
+#			 	cert /etc/ssl/ca/certs/caddy-intermediate.crt
+#			 	key /etc/ssl/ca/certs/caddy-intermediate.key
+#			}
 		}
     }
 }
