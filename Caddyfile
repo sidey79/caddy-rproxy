@@ -2,18 +2,17 @@
 	acme_ca https://acme.zerossl.com/v2/DV90
 	email   sven@blausee.eu
     pki {
-#		ca blausee_ca {
-#			root {
-#				format pem_file
-#				cert /etc/ssl/ca/certs/blausee_ca.crt
-#
-#			}
-#			intermediate {
-#			 	format pem_file
-#			 	cert /etc/ssl/ca/certs/caddy-intermediate.crt
-#			 	key /etc/ssl/ca/certs/caddy-intermediate.key
-#			}
-#		}
+		ca blausee_ca {
+			root {
+				format pem_file
+				cert /etc/ssl/ca/certs/blausee_ca.crt
+			}
+			intermediate {
+			 	format pem_file
+			 	cert /etc/ssl/ca/certs/caddy-intermediate.crt
+			 	key /etc/ssl/ca/private/caddy-intermediate.key
+			}
+		}
     }
 }
 
