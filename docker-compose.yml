@@ -6,11 +6,11 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./site:/srv
-      - ./data:/data
-      - ./caddy_config:/config
-      - /opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/ca.crt:ro
-      - /opt/docker/rootca/private/root-ca.key.pem:/etc/ssl/ca/certs/ca.key:ro
-      - /opt/docker/rootca/crl/root-ca.crl:/etc/ssl/ca/private/ca.crl:ro
+      - /opt/docker/caddy/data:/data
+      - /opt/docker/caddy/caddy_config:/config
+      - /opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/blausee_ca.crt:ro
+      - /opt/docker/rootca/intermediate/caddy-intermediate.crt.pem:/etc/ssl/ca/certs/caddy-intermediate.crt
+      - /opt/docker/rootca/intermediate/caddy-intermediate.key.pem:/etc/ssl/ca/private/caddy-intermediate.key
     environment:
       CADDY_SUBDOMAIN: $CADDY_SUBDOMAIN
       CADDY_SUBDOMAIN2: $CADDY_SUBDOMAIN2
@@ -23,6 +23,7 @@ services:
         ipv4_address: 10.2.11.19
         ipv6_address: fd00:10:2:11::19
     restart: unless-stopped
+    user: 5100:5100
     cap_add:
       - NET_ADMIN
 
