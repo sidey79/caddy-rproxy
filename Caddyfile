@@ -1,4 +1,19 @@
 {
+        acme_ca https://acme.zerossl.com/v2/DV90
+        email sven@blausee.eu
+        pki {
+                ca blausee_ca {
+                        root {
+                                format pem_file
+                                cert /etc/ssl/ca/certs/blausee_ca.crt
+                        }
+                        intermediate {
+                                format pem_file
+                                cert /etc/ssl/ca/certs/caddy-intermediate.crt
+                                key /etc/ssl/ca/private/caddy-intermediate.key
+                        }
+                }
+        }
 }
 
 (missing_mTLS_cert) {
@@ -29,16 +44,15 @@
                 client_auth {
                         mode require_and_verify
                         trust_pool file {
-                           pem_file /etc/ssl/ca/certs/ca.crt
+                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
                         }
                 }
         }
 }
 
 (local_ip_ranges) {
-   not client_ip 10.2.11.0/24
+        not remote_ip 10.2.11.0/24
 }
-
 
 # use this import if you want to be able to fallback to basic auth
 (mTLS_optional) {
@@ -46,7 +60,7 @@
                 client_auth {
                         mode verify_if_given
                         trust_pool file {
-                           pem_file /etc/ssl/ca/certs/ca.crt
+                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
                         }
                 }
         }
@@ -72,7 +86,7 @@ fhem.{$CADDY_SUBDOMAIN} {
                 transport http {
                         tls_server_name zeus.fritz.box
                         tls_trust_pool file {
-                                pem_file /etc/ssl/ca/certs/ca.crt
+                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
                         }
                 }
         }
@@ -80,14 +94,12 @@ fhem.{$CADDY_SUBDOMAIN} {
         import logging_info
 }
 
-
 dms.{$CADDY_SUBDOMAIN} {
         import mTLS_required
         encode gzip
         reverse_proxy http://paperless-ngx-webserver-1.network_backend_net:8000
         import logging_info
 }
-
 
 # Uncomment this in addition with the import admin_redir statement allow access to the admin interface only from local networks
 (admin_redir) {
@@ -101,13 +113,13 @@ dms.{$CADDY_SUBDOMAIN} {
 bitwarden.{$CADDY_SUBDOMAIN} {
         encode gzip
         import admin_redir
-	route {
-		@tasks path /api/tasks
-		handle @tasks {
-			header Content-Type application/json
-			respond `{"data":[],"object":"list"}` 200
-		}
-	}
+        route {
+                @tasks path /api/tasks
+                handle @tasks {
+                        header Content-Type application/json
+                        respond `{"data":[],"object":"list"}` 200
+                }
+        }
         # If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
         header / {
                 # Enable HTTP Strict Transport Security (HSTS)
@@ -133,16 +145,16 @@ bitwarden.{$CADDY_SUBDOMAIN} {
         import logging_info
 }
 
-caddy.{$CADDY_SUBDOMAIN2} {
-        import mTLS_required
-        encode gzip
-        reverse_proxy https://fhem-docker-test-fhem-1.network_backend_net:8083 {
-                transport http {
-                        tls_insecure_skip_verify
-                }
-        }
-        import logging_info
-}
+# caddy.{$CADDY_SUBDOMAIN2} {
+#       import mTLS_required
+#       encode gzip
+#       reverse_proxy https://fhem-docker-test-fhem-1.network_backend_net:8083 {
+#                       transport http {
+#                                       tls_insecure_skip_verify
+#                       }
+#       }
+#       import logging_info
+# }
 
 ui.{$CADDY_SUBDOMAIN} {
         import mTLS_required
@@ -150,10 +162,10 @@ ui.{$CADDY_SUBDOMAIN} {
         rewrite /images/* /fhem{uri}
 
         reverse_proxy /fhem/images/* https://fhem-fhem-1.network_backend_net:8088 {
-               transport http {
+                transport http {
                         tls_server_name zeus.fritz.box
                         tls_trust_pool file {
-                                pem_file /etc/ssl/ca/certs/ca.crt
+                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
                         }
                 }
         }
@@ -164,7 +176,33 @@ ui.{$CADDY_SUBDOMAIN} {
         }
 }
 
-tabbyml.{$CADDY_SUBDOMAIN} {
-        reverse_proxy http://10.2.11.57:8080
+workflow.{$CADDY_SUBDOMAIN} {
+        import mTLS_required
+        @n8nWebHooks {
+                path /webhook/* /webhook-test/* /webhook-waiting/*
+        }
+        reverse_proxy @n8nWebHooks https://n8n-n8n-1.network_backend_net:5678 {
+                transport http {
+                        tls_server_name n8n
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
+                        }
+                }
+        }
         import logging_info
 }
+
+n8n.{$CADDY_SUBDOMAIN3} {
+        tls {
+                issuer internal {
+                        ca blausee_ca
+                }
+        }
+        reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
+                transport http {
+                        tls_server_name n8n
+                        tls_trust_pool file {
+                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
+                        }
+                }
+        }
