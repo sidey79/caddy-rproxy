@@ -177,15 +177,39 @@ ui.{$CADDY_SUBDOMAIN} {
 }
 
 workflow.{$CADDY_SUBDOMAIN} {
-        import mTLS_required
+        import mTLS_optional
         @n8nWebHooks {
                 path /webhook/* /webhook-test/* /webhook-waiting/*
         }
-        reverse_proxy @n8nWebHooks https://n8n-n8n-1.network_backend_net:5678 {
-                transport http {
-                        tls_server_name n8n
-                        tls_trust_pool file {
-                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
+        # Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
+        @telegramReissueWebhook {
+                method POST
+                header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
+                path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
+        }
+        route {
+                handle @telegramReissueWebhook {
+                        reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
+                                transport http {
+                                        tls_server_name n8n
+                                        tls_trust_pool file {
+                                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
+                                        }
+                                }
+                        }
+                }
+                import missing_mTLS_cert
+                handle @missing_mTLS_cert {
+                        respond "mTLS client certificate required" 403
+                }
+                handle @n8nWebHooks {
+                        reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
+                                transport http {
+                                        tls_server_name n8n
+                                        tls_trust_pool file {
+                                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
+                                        }
+                                }
                         }
                 }
         }
@@ -206,3 +230,4 @@ n8n.{$CADDY_SUBDOMAIN3} {
                         }
                 }
         }
+}
