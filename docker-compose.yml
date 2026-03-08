@@ -5,6 +5,7 @@ services:
     image: caddy:2.11.2@sha256:261437d35b88cc2f8fa1ed337ebb6b6ce2bd5cd61b2a28cdf83cb201db0a853b
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./dynamic:/etc/caddy/dynamic
       - ./site:/srv
       - /opt/docker/caddy/data:/data
       - /opt/docker/caddy/caddy_config:/config

@@ -54,6 +54,13 @@
         not remote_ip 10.2.11.0/24
 }
 
+# Managed by external automation with the current public home IPv4/IPv6 prefix.
+(dynamic_home_allowlist) {
+        @from_dynamic_home {
+                import /etc/caddy/dynamic/home-allowlist.caddy
+        }
+}
+
 # use this import if you want to be able to fallback to basic auth
 (mTLS_optional) {
         tls {
@@ -102,6 +109,8 @@ dms.{$CADDY_SUBDOMAIN} {
 }
 
 # Uncomment this in addition with the import admin_redir statement allow access to the admin interface only from local networks
+# For home access behind a Fritzbox, prefer `import dynamic_home_allowlist` and `@from_dynamic_home`
+# over `remote_ip private_ranges`, because Caddy usually only sees the public WAN IPv4/IPv6.
 (admin_redir) {
         @admin {
                 path /admin*
@@ -206,3 +215,4 @@ n8n.{$CADDY_SUBDOMAIN3} {
                         }
                 }
         }
+}

@@ -1,0 +1,4 @@
+# Managed by automation.
+# Keep this file syntactically valid at all times so Caddy can reload safely.
+# Replace these documentation-only networks with the current public IPv4 and delegated IPv6 prefix.
+remote_ip 192.0.2.1/32 2001:db8::/128
