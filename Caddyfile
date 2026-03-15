@@ -193,6 +193,7 @@ workflow.{$CADDY_SUBDOMAIN} {
         route {
                 handle @workflowAssets {
                         root * /srv/workflow
+
                         file_server
                 }
                 handle @telegramReissueWebhook {
