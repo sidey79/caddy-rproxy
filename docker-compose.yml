@@ -1,8 +1,22 @@
 name: caddy-rproxy
 
 services:
+  fetch-workflow-assets:
+    image: curlimages/curl:8.12.1
+    command: ["sh", "/scripts/fetch-workflow-assets.sh"]
+    environment:
+      GITHUB_TOKEN: $GITHUB_TOKEN
+      GITHUB_ASSET_REF: ${GITHUB_ASSET_REF:-main}
+    volumes:
+      - ./site:/target
+      - ./scripts:/scripts:ro
+    restart: "no"
+
   caddy:
     image: caddy:2.11.2@sha256:1e40b251ca9639ead7b5cd2cedcc8765adfbabb99450fe23f130eefabf50f4bc
+    depends_on:
+      fetch-workflow-assets:
+        condition: service_completed_successfully
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./site:/srv
