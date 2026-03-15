@@ -1,0 +1,261 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1020;
+  --surface: #151f35;
+  --surface-2: #1a2640;
+  --text: #e5ecff;
+  --text-dim: #9db0d9;
+  --primary-2: #7ce8ff;
+  --border: #2a3c63;
+  --success-bg: #113225;
+  --success: #5ae3a4;
+  --warning-bg: #3a2d12;
+  --warning: #ffd36b;
+  --danger-bg: #441d26;
+  --danger: #ff8ca4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top right, #1d2f55 0%, var(--bg) 45%);
+}
+
+.wrapper {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 14px 40px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: var(--text-dim);
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+.btn,
+.link-btn {
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: linear-gradient(180deg, #243b68 0%, #1d2f55 100%);
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.link-btn {
+  background: linear-gradient(180deg, #263751 0%, #1d2b44 100%);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  border: 1px solid var(--border);
+  background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.stat-label {
+  color: var(--text-dim);
+  font-size: 0.86rem;
+}
+
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.table-wrap {
+  border: 1px solid var(--border);
+  background: rgba(9, 14, 25, 0.8);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #10182b;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+th,
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #1f2f4f;
+  vertical-align: top;
+  text-align: left;
+}
+
+tbody tr:hover {
+  background: rgba(98, 167, 255, 0.08);
+}
+
+.repo-pill {
+  display: inline-block;
+  background: #253a61;
+  color: #d8e6ff;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.pr-link {
+  color: var(--primary-2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pr-link:hover {
+  text-decoration: underline;
+}
+
+.meta {
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-size: 0.84rem;
+}
+
+.chip-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.chip-draft {
+  background: #29354f;
+  color: #c7d4ef;
+}
+
+.chip-aged {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.age-badge,
+.ci-pill {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.age-cool {
+  background: #17344a;
+  color: #80d7ff;
+}
+
+.age-hot {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.ci-success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.ci-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.ci-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.ci-neutral {
+  background: #273349;
+  color: #c8d6f3;
+}
+
+.empty {
+  color: var(--text-dim);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .wrapper {
+    padding: 16px 10px 30px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  thead {
+    display: none;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    border-bottom: 1px solid #243759;
+    padding: 8px 10px;
+  }
+
+  td {
+    border: 0;
+    padding: 8px 4px;
+  }
+
+  td::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+}
