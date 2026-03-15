@@ -217,7 +217,9 @@ workflow.{$CADDY_SUBDOMAIN} {
                         }
                 }
         }
-        import logging_info
+        log {
+                level DEBUG
+        }
 }
 
 n8n.{$CADDY_SUBDOMAIN3} {
