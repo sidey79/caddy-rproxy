@@ -178,6 +178,9 @@ ui.{$CADDY_SUBDOMAIN} {
 
 workflow.{$CADDY_SUBDOMAIN} {
         import mTLS_optional
+        @workflowAssets {
+                path /assets/*
+        }
         @n8nWebHooks {
                 path /webhook/* /webhook-test/* /webhook-waiting/*
         }
@@ -188,8 +191,9 @@ workflow.{$CADDY_SUBDOMAIN} {
                 path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
         }
         route {
-                handle_path /assets/* {
-                        root * /srv/workflow/assets
+                handle @workflowAssets {
+                        root * /srv/workflow
+
                         file_server
                 }
                 handle @telegramReissueWebhook {
