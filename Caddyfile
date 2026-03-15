@@ -219,9 +219,6 @@ workflow.{$CADDY_SUBDOMAIN} {
                                 }
                         }
                 }
-                handle {
-                        respond "workflow fallback: no route matched" 404
-                }
         }
         log {
                 level DEBUG
