@@ -178,10 +178,6 @@ ui.{$CADDY_SUBDOMAIN} {
 
 workflow.{$CADDY_SUBDOMAIN} {
         import mTLS_optional
-        handle_path /assets/* {
-                root * /srv/workflow/assets
-                file_server
-        }
         @n8nWebHooks {
                 path /webhook/* /webhook-test/* /webhook-waiting/*
         }
@@ -192,6 +188,10 @@ workflow.{$CADDY_SUBDOMAIN} {
                 path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
         }
         route {
+                handle_path /assets/* {
+                        root * /srv/workflow/assets
+                        file_server
+                }
                 handle @telegramReissueWebhook {
                         reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
                                 transport http {
