@@ -220,9 +220,7 @@ workflow.{$CADDY_SUBDOMAIN} {
                         }
                 }
         }
-        log {
-                level DEBUG
-        }
+        import logging_info
 }
 
 n8n.{$CADDY_SUBDOMAIN3} {
