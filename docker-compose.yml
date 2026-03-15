@@ -41,7 +41,7 @@ services:
       GITHUB_ASSET_REF: ${GITHUB_ASSET_REF:-main}
     command: ["sh", "/scripts/fetch-workflow-assets.sh"]
     restart: "no"
-    user: "1000:1000"
+    user: "5100:5100"
 
 networks:
   backend_net:
