@@ -179,7 +179,7 @@ ui.{$CADDY_SUBDOMAIN} {
 workflow.{$CADDY_SUBDOMAIN} {
         import mTLS_optional
         handle_path /assets/* {
-                root * /srv/workflow
+                root * /srv/workflow/assets
                 file_server
         }
         @n8nWebHooks {
