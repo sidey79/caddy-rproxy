@@ -2,6 +2,13 @@
 
 Caddy reverse proxy docker-compose setup.
 
+## Authentik route
+
+The reverse proxy exposes authentik at `authentik.{$CADDY_SUBDOMAIN}` and forwards traffic to
+`authentik-docker-authentik-server-1.network_backend_net:9000`.
+
+The target service must be attached to `network_backend_net`.
+
 ## Environment
 
 Set `TELEGRAM_WEBHOOK_SECRET` to the same value used by the Scanservjs Telegram bot webhook. Caddy checks this value against the `X-Telegram-Bot-Api-Secret-Token` header and only bypasses mTLS for:

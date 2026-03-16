@@ -101,6 +101,13 @@ dms.{$CADDY_SUBDOMAIN} {
         import logging_info
 }
 
+authentik.{$CADDY_SUBDOMAIN} {
+        import mTLS_required
+        encode gzip
+        reverse_proxy http://authentik-docker-authentik-server-1.network_backend_net:9000
+        import logging_info
+}
+
 # Uncomment this in addition with the import admin_redir statement allow access to the admin interface only from local networks
 (admin_redir) {
         @admin {
