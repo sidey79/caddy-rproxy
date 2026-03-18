@@ -2,6 +2,20 @@
 
 Caddy reverse proxy docker-compose setup.
 
+## Authelia route
+
+The reverse proxy exposes Authelia at `auth.{$CADDY_SUBDOMAIN}` and forwards traffic to
+`http://authelia:9091` on the shared Docker network `network_backend_net`.
+
+Related stack: https://github.com/sidey79/authelia-docker
+
+The route uses `mTLS_optional`. If a client certificate is provided, selected certificate metadata
+is forwarded to Authelia via headers:
+
+- `X-Client-Cert-Serial`
+- `X-Client-Cert-Subject`
+- `X-Client-Cert-Fingerprint`
+
 ## Environment
 
 Set `TELEGRAM_WEBHOOK_SECRET` to the same value used by the Scanservjs Telegram bot webhook. Caddy checks this value against the `X-Telegram-Bot-Api-Secret-Token` header and only bypasses mTLS for:

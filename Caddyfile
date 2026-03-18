@@ -101,6 +101,17 @@ dms.{$CADDY_SUBDOMAIN} {
         import logging_info
 }
 
+auth.{$CADDY_SUBDOMAIN} {
+        import mTLS_optional
+        encode gzip
+        reverse_proxy http://authelia:9091 {
+                header_up X-Client-Cert-Serial {tls_client_serial}
+                header_up X-Client-Cert-Subject {tls_client_subject}
+                header_up X-Client-Cert-Fingerprint {tls_client_fingerprint}
+        }
+        import logging_info
+}
+
 # Uncomment this in addition with the import admin_redir statement allow access to the admin interface only from local networks
 (admin_redir) {
         @admin {
