@@ -66,6 +66,7 @@
 	}
 }
 (authelia_forward_auth) {
+	request_header -Remote-*
 	forward_auth authelia:9091 {
 		uri /api/authz/forward-auth
 		copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
@@ -75,6 +76,24 @@
 	log {
 		level INFO
 	}
+}
+(n8n_upstream) {
+	reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
+		transport http {
+			tls_server_name n8n
+			tls_trust_pool file {
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
+			}
+		}
+	}
+}
+(githubPrDashboardUi_base) {
+	method GET HEAD
+	path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/*
+}
+(githubPrDashboardUi_mtls) {
+	import githubPrDashboardUi_base
+	expression {tls_client_subject} != null
 }
 #pi2 {
 #  tls internal
@@ -140,7 +159,7 @@ bitwarden.{$CADDY_SUBDOMAIN} {
 	# If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
 	header / {
 		# Enable HTTP Strict Transport Security (HSTS)
-		Strict-Transport-Security "max-age=31536000;"
+			Strict-Transport-Security "max-age=31536000;"
 		# Disable cross-site filter (XSS)
 		X-XSS-Protection "0"
 		# Disallow the site to be rendered within a frame (clickjacking protection)
@@ -209,6 +228,12 @@ workflow.{$CADDY_SUBDOMAIN} {
 	@n8nWebHooks {
 		path /webhook/* /webhook-test/* /webhook-waiting/*
 	}
+	@githubPrDashboardUiMtls {
+		import githubPrDashboardUi_mtls
+	}
+	@githubPrDashboardUi {
+		import githubPrDashboardUi_base
+	}
 	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
 	@telegramReissueWebhook {
 		method POST
@@ -221,50 +246,28 @@ workflow.{$CADDY_SUBDOMAIN} {
 
 			file_server
 		}
+		handle @githubPrDashboardUiMtls {
+			import n8n_upstream
+		}
 		handle @githubPrDashboardUi {
 			import authelia_forward_auth
-			reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
-				transport http {
-					tls_server_name n8n
-					tls_trust_pool file {
-						pem_file /etc/ssl/ca/certs/blausee_ca.crt
-					}
-				}
-			}
+			import n8n_upstream
 		}
 		handle @githubPrDashboardWebhook {
-			reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
-				transport http {
-					tls_server_name n8n
-					tls_trust_pool file {
-						pem_file /etc/ssl/ca/certs/blausee_ca.crt
-					}
-				}
-			}
+			import n8n_upstream
 		}
 		handle @telegramReissueWebhook {
-			reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
-				transport http {
-					tls_server_name n8n
-					tls_trust_pool file {
-						pem_file /etc/ssl/ca/certs/blausee_ca.crt
-					}
-				}
-			}
+			import n8n_upstream
 		}
-		import missing_mTLS_cert
-		handle @missing_mTLS_cert {
+		@workflow_missing_mtls {
+			expression {tls_client_subject} == null
+			not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/*
+		}
+		handle @workflow_missing_mtls {
 			respond "mTLS client certificate required" 403
 		}
 		handle @n8nWebHooks {
-			reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
-				transport http {
-					tls_server_name n8n
-					tls_trust_pool file {
-						pem_file /etc/ssl/ca/certs/blausee_ca.crt
-					}
-				}
-			}
+			import n8n_upstream
 		}
 	}
 	import logging_info
@@ -276,12 +279,5 @@ n8n.{$CADDY_SUBDOMAIN3} {
 			ca blausee_ca
 		}
 	}
-	reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
-		transport http {
-			tls_server_name n8n
-			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/blausee_ca.crt
-			}
-		}
-	}
+	import n8n_upstream
 }
