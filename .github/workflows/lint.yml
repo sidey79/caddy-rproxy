@@ -12,3 +12,36 @@ jobs:
           path: ./
           recursive: true
           fix: false
+  caddyfile:
+    name: runner / caddyfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+      - name: Prepare dummy CA files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/caddy-ca/certs" "$RUNNER_TEMP/caddy-ca/private"
+          openssl genrsa -out "$RUNNER_TEMP/caddy-ca/private/caddy-intermediate.key" 2048
+          openssl req -x509 -new -key "$RUNNER_TEMP/caddy-ca/private/caddy-intermediate.key" \
+            -out "$RUNNER_TEMP/caddy-ca/certs/caddy-intermediate.crt" -days 1 \
+            -subj "/CN=Dummy Caddy Intermediate"
+          openssl genrsa -out "$RUNNER_TEMP/caddy-ca/private/blausee_ca.key" 2048
+          openssl req -x509 -new -key "$RUNNER_TEMP/caddy-ca/private/blausee_ca.key" \
+            -out "$RUNNER_TEMP/caddy-ca/certs/blausee_ca.crt" -days 1 \
+            -subj "/CN=Dummy Root CA"
+      - name: Validate Caddyfile
+        run: |
+          docker run --rm -u 0 \
+            -e CADDY_SUBDOMAIN=example.com \
+            -e CADDY_SUBDOMAIN2=example2.com \
+            -e CADDY_SUBDOMAIN3=example3.com \
+            -e CADDY_ADMIN_USER=admin \
+            -e CADDY_ADMIN_PASSWORD=secret \
+            -e TELEGRAM_WEBHOOK_SECRET=dummy \
+            -v "$GITHUB_WORKSPACE:/work" \
+            -v "$RUNNER_TEMP/caddy-ca/certs:/etc/ssl/ca/certs:ro" \
+            -v "$RUNNER_TEMP/caddy-ca/private:/etc/ssl/ca/private:ro" \
+            -w /work \
+            caddy:2.11.2 sh -lc 'caddy validate --config /work/Caddyfile'
