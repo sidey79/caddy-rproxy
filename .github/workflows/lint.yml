@@ -33,7 +33,7 @@ jobs:
             -subj "/CN=Dummy Root CA"
       - name: Validate Caddyfile
         run: |
-          CADDY_IMAGE="$(docker compose config --images caddy | head -n 1)"
+          CADDY_IMAGE="$(docker compose config --format json | jq -r '.services.caddy.image')"
           docker run --rm -u 0 \
             -e CADDY_SUBDOMAIN=example.com \
             -e CADDY_SUBDOMAIN2=example2.com \
