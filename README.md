@@ -9,8 +9,10 @@ The reverse proxy exposes Authelia at `auth.{$CADDY_SUBDOMAIN}` and forwards tra
 
 Related stack: https://github.com/sidey79/authelia-docker
 
-The route uses `mTLS_optional`. If a client certificate is provided, selected certificate metadata
-is forwarded to Authelia via headers:
+The route uses `mTLS_optional`. The browser-facing n8n UI is then protected with Authelia forward
+auth. The GitHub webhook path `/webhook/github-pr-dashboard` stays exempt so GitHub can still call
+it directly. If a client certificate is provided, selected certificate metadata is forwarded to
+Authelia via headers:
 
 - `X-Client-Cert-Serial`
 - `X-Client-Cert-Subject`
@@ -23,7 +25,8 @@ Set `TELEGRAM_WEBHOOK_SECRET` to the same value used by the Scanservjs Telegram 
 - `POST /webhook/scanservjs/telegram/reissue`
 - `POST /webhook-test/scanservjs/telegram/reissue`
 
-All other `workflow.*` paths remain protected by the existing mTLS policy.
+All other `workflow.*` paths remain protected by the existing mTLS policy and, for the browser UI,
+by Authelia forward auth.
 
 `docker compose up` starts a one-shot `fetch-workflow-assets` service before Caddy. It downloads `github-pr-dashboard.css` from `sidey79/n8n_wf_build` into `site/workflow/assets/`.
 

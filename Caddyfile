@@ -65,6 +65,12 @@
                 }
         }
 }
+(authelia_forward_auth) {
+        forward_auth authelia:9091 {
+                uri /api/authz/forward-auth
+                copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+        }
+}
 (logging_info) {
         log {
                 level INFO
@@ -192,6 +198,9 @@ workflow.{$CADDY_SUBDOMAIN} {
         @workflowAssets {
                 path /assets/*
         }
+        @githubPrDashboardWebhook {
+                path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
+        }
         @n8nWebHooks {
                 path /webhook/* /webhook-test/* /webhook-waiting/*
         }
@@ -206,6 +215,16 @@ workflow.{$CADDY_SUBDOMAIN} {
                         root * /srv/workflow
 
                         file_server
+                }
+                handle @githubPrDashboardWebhook {
+                        reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
+                                transport http {
+                                        tls_server_name n8n
+                                        tls_trust_pool file {
+                                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
+                                        }
+                                }
+                        }
                 }
                 handle @telegramReissueWebhook {
                         reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
@@ -222,6 +241,17 @@ workflow.{$CADDY_SUBDOMAIN} {
                         respond "mTLS client certificate required" 403
                 }
                 handle @n8nWebHooks {
+                        reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
+                                transport http {
+                                        tls_server_name n8n
+                                        tls_trust_pool file {
+                                                pem_file /etc/ssl/ca/certs/blausee_ca.crt
+                                        }
+                                }
+                        }
+                }
+                handle {
+                        import authelia_forward_auth
                         reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
                                 transport http {
                                         tls_server_name n8n
