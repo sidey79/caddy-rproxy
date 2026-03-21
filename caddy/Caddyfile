@@ -214,24 +214,12 @@ workflow.{$CADDY_SUBDOMAIN} {
 		header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
 		path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
 	}
-	@githubPrDashboardUiMtls {
-		method GET HEAD POST
-		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
-		expression {tls_client_subject} != ""
-	}
-	@githubPrDashboardUiAuthelia {
-		method GET HEAD POST
-		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
-		expression {tls_client_subject} == ""
-	}
 	@webhooksMtls {
 		path /webhook/* /webhook-test/*
-		not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
 		expression {tls_client_subject} != ""
 	}
 	@webhooksAuthelia {
 		path /webhook/* /webhook-test/*
-		not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
 		expression {tls_client_subject} == ""
 	}
 	route {
@@ -240,13 +228,6 @@ workflow.{$CADDY_SUBDOMAIN} {
 			file_server
 		}
 		handle @telegramReissueWebhook {
-			import n8n_upstream
-		}
-		handle @githubPrDashboardUiMtls {
-			import n8n_upstream
-		}
-		handle @githubPrDashboardUiAuthelia {
-			import authelia_forward_auth
 			import n8n_upstream
 		}
 		handle @webhooksMtls {
