@@ -7,7 +7,7 @@ services:
       fetch-workflow-assets:
         condition: service_completed_successfully
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy:/etc/caddy
       - ./site:/srv
       - /opt/docker/caddy/data:/data
       - /opt/docker/caddy/caddy_config:/config

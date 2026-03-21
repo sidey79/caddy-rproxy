@@ -45,4 +45,4 @@ jobs:
             -v "$RUNNER_TEMP/caddy-ca/certs:/etc/ssl/ca/certs:ro" \
             -v "$RUNNER_TEMP/caddy-ca/private:/etc/ssl/ca/private:ro" \
             -w /work \
-            "$CADDY_IMAGE" sh -lc 'caddy validate --config /work/Caddyfile'
+            "$CADDY_IMAGE" sh -lc 'caddy validate --config /work/caddy/Caddyfile'

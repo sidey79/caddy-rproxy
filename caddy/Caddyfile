@@ -208,6 +208,12 @@ workflow.{$CADDY_SUBDOMAIN} {
 	@workflowAssets {
 		path /assets/*
 	}
+	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
+	@telegramReissueWebhook {
+		method POST
+		header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
+		path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
+	}
 	@githubPrDashboardUiMtls {
 		method GET HEAD
 		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
@@ -222,24 +228,23 @@ workflow.{$CADDY_SUBDOMAIN} {
 		method POST
 		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
 	}
-	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
-	@telegramReissueWebhook {
-		method POST
-		header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
-		path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
-	}
-	@n8nWebHooksMtls {
-		path /webhook/* /webhook-test/* /webhook-waiting/*
+	@webhooksMtls {
+		path /webhook/* /webhook-test/*
+		not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
 		expression {tls_client_subject} != null
 	}
-	@n8nWebHooksAuthelia {
-		path /webhook/* /webhook-test/* /webhook-waiting/*
+	@webhooksAuthelia {
+		path /webhook/* /webhook-test/*
+		not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
 		expression {tls_client_subject} == null
 	}
 	route {
 		handle @workflowAssets {
 			root * /srv/workflow
 			file_server
+		}
+		handle @telegramReissueWebhook {
+			import n8n_upstream
 		}
 		handle @githubPrDashboardWebhook {
 			import n8n_upstream
@@ -251,13 +256,10 @@ workflow.{$CADDY_SUBDOMAIN} {
 			import authelia_forward_auth
 			import n8n_upstream
 		}
-		handle @telegramReissueWebhook {
+		handle @webhooksMtls {
 			import n8n_upstream
 		}
-		handle @n8nWebHooksMtls {
-			import n8n_upstream
-		}
-		handle @n8nWebHooksAuthelia {
+		handle @webhooksAuthelia {
 			import authelia_forward_auth
 			import n8n_upstream
 		}
