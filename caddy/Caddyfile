@@ -18,7 +18,7 @@
 
 (missing_mTLS_cert) {
 	@missing_mTLS_cert {
-		expression {tls_client_subject} == null
+		expression {tls_client_subject} == ""
 	}
 }
 
@@ -217,22 +217,22 @@ workflow.{$CADDY_SUBDOMAIN} {
 	@githubPrDashboardUiMtls {
 		method GET HEAD POST
 		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
-		expression {tls_client_subject} != null
+		expression {tls_client_subject} != ""
 	}
 	@githubPrDashboardUiAuthelia {
 		method GET HEAD POST
 		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
-		expression {tls_client_subject} == null
+		expression {tls_client_subject} == ""
 	}
 	@webhooksMtls {
 		path /webhook/* /webhook-test/*
 		not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
-		expression {tls_client_subject} != null
+		expression {tls_client_subject} != ""
 	}
 	@webhooksAuthelia {
 		path /webhook/* /webhook-test/*
 		not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
-		expression {tls_client_subject} == null
+		expression {tls_client_subject} == ""
 	}
 	route {
 		handle @workflowAssets {
