@@ -87,14 +87,6 @@
 		}
 	}
 }
-(githubPrDashboardUi_base) {
-	method GET HEAD
-	path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/*
-}
-(githubPrDashboardUi_mtls) {
-	import githubPrDashboardUi_base
-	expression {tls_client_subject} != null
-}
 #pi2 {
 #  tls internal
 #  import mTLS_optional
@@ -115,7 +107,6 @@ fhem.{$CADDY_SUBDOMAIN} {
 			}
 		}
 	}
-
 	import logging_info
 }
 
@@ -159,7 +150,7 @@ bitwarden.{$CADDY_SUBDOMAIN} {
 	# If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
 	header / {
 		# Enable HTTP Strict Transport Security (HSTS)
-			Strict-Transport-Security "max-age=31536000;"
+		Strict-Transport-Security "max-age=31536000;"
 		# Disable cross-site filter (XSS)
 		X-XSS-Protection "0"
 		# Disallow the site to be rendered within a frame (clickjacking protection)
@@ -217,22 +208,19 @@ workflow.{$CADDY_SUBDOMAIN} {
 	@workflowAssets {
 		path /assets/*
 	}
-	@githubPrDashboardUi {
+	@githubPrDashboardUiMtls {
 		method GET HEAD
-		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/*
+		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
+		expression {tls_client_subject} != null
+	}
+	@githubPrDashboardUiAuthelia {
+		method GET HEAD
+		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
+		expression {tls_client_subject} == null
 	}
 	@githubPrDashboardWebhook {
 		method POST
 		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
-	}
-	@n8nWebHooks {
-		path /webhook/* /webhook-test/* /webhook-waiting/*
-	}
-	@githubPrDashboardUiMtls {
-		import githubPrDashboardUi_mtls
-	}
-	@githubPrDashboardUi {
-		import githubPrDashboardUi_base
 	}
 	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
 	@telegramReissueWebhook {
@@ -240,33 +228,37 @@ workflow.{$CADDY_SUBDOMAIN} {
 		header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
 		path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
 	}
+	@n8nWebHooksMtls {
+		path /webhook/* /webhook-test/* /webhook-waiting/*
+		expression {tls_client_subject} != null
+	}
+	@n8nWebHooksAuthelia {
+		path /webhook/* /webhook-test/* /webhook-waiting/*
+		expression {tls_client_subject} == null
+	}
 	route {
 		handle @workflowAssets {
 			root * /srv/workflow
-
 			file_server
+		}
+		handle @githubPrDashboardWebhook {
+			import n8n_upstream
 		}
 		handle @githubPrDashboardUiMtls {
 			import n8n_upstream
 		}
-		handle @githubPrDashboardUi {
+		handle @githubPrDashboardUiAuthelia {
 			import authelia_forward_auth
-			import n8n_upstream
-		}
-		handle @githubPrDashboardWebhook {
 			import n8n_upstream
 		}
 		handle @telegramReissueWebhook {
 			import n8n_upstream
 		}
-		@workflow_missing_mtls {
-			expression {tls_client_subject} == null
-			not path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/*
+		handle @n8nWebHooksMtls {
+			import n8n_upstream
 		}
-		handle @workflow_missing_mtls {
-			respond "mTLS client certificate required" 403
-		}
-		handle @n8nWebHooks {
+		handle @n8nWebHooksAuthelia {
+			import authelia_forward_auth
 			import n8n_upstream
 		}
 	}
