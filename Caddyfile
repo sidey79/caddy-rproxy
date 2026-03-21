@@ -217,10 +217,6 @@ workflow.{$CADDY_SUBDOMAIN} {
 	@workflowAssets {
 		path /assets/*
 	}
-	@githubPrDashboardUi {
-		method GET HEAD
-		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/*
-	}
 	@githubPrDashboardWebhook {
 		method POST
 		path /webhook/github-pr-dashboard /webhook/github-pr-dashboard/* /webhook-test/github-pr-dashboard /webhook-test/github-pr-dashboard/*
