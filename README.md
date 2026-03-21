@@ -9,8 +9,11 @@ The reverse proxy exposes Authelia at `auth.{$CADDY_SUBDOMAIN}` and forwards tra
 
 Related stack: https://github.com/sidey79/authelia-docker
 
-The route uses `mTLS_optional`. If a client certificate is provided, selected certificate metadata
-is forwarded to Authelia via headers:
+The route uses `mTLS_optional`. The workflow host does not expose the n8n editor or any generic
+backend path. It only serves the local workflow asset store from `/assets/*`, protects the browser
+UI for `/webhook/github-pr-dashboard` with Authelia, and forwards the `POST` webhook request to
+n8n. If a client certificate is provided, selected certificate metadata is forwarded to Authelia
+via headers:
 
 - `X-Client-Cert-Serial`
 - `X-Client-Cert-Subject`
