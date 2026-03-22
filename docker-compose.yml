@@ -7,7 +7,7 @@ services:
       fetch-workflow-assets:
         condition: service_completed_successfully
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy:/etc/caddy
       - ./site:/srv
       - /opt/docker/caddy/data:/data
       - /opt/docker/caddy/caddy_config:/config
@@ -15,12 +15,12 @@ services:
       - /opt/docker/rootca/intermediate/caddy-intermediate.crt.pem:/etc/ssl/ca/certs/caddy-intermediate.crt
       - /opt/docker/rootca/intermediate/caddy-intermediate.key.pem:/etc/ssl/ca/private/caddy-intermediate.key
     environment:
-      CADDY_SUBDOMAIN: $CADDY_SUBDOMAIN
-      CADDY_SUBDOMAIN2: $CADDY_SUBDOMAIN2
-      CADDY_SUBDOMAIN3: $CADDY_SUBDOMAIN3
-      CADDY_ADMIN_USER: $CADDY_ADMIN_USER
-      CADDY_ADMIN_PASSWORD: $CADDY_ADMIN_PASSWORD
-      TELEGRAM_WEBHOOK_SECRET: $TELEGRAM_WEBHOOK_SECRET
+      CADDY_SUBDOMAIN: ${CADDY_SUBDOMAIN:-}
+      CADDY_SUBDOMAIN2: ${CADDY_SUBDOMAIN2:-}
+      CADDY_SUBDOMAIN3: ${CADDY_SUBDOMAIN3:-}
+      CADDY_ADMIN_USER: ${CADDY_ADMIN_USER:-}
+      CADDY_ADMIN_PASSWORD: ${CADDY_ADMIN_PASSWORD:-}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
     networks:
       backend_net:
       homelan:
@@ -37,7 +37,7 @@ services:
       - ./site:/target
       - ./scripts:/scripts:ro
     environment:
-      GITHUB_TOKEN: $GITHUB_TOKEN
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       GITHUB_ASSET_REF: ${GITHUB_ASSET_REF:-main}
     command: ["sh", "/scripts/fetch-workflow-assets.sh"]
     restart: "no"
