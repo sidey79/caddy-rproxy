@@ -79,7 +79,6 @@
 }
 (n8n_upstream) {
 	reverse_proxy https://n8n-n8n-1.network_backend_net:5678 {
-		header_up -X-Client-Cert-*
 		header_up X-Client-Cert-Subject {tls_client_subject}
 		header_up X-Client-Cert-Serial {tls_client_serial}
 		header_up X-Client-Cert-Fingerprint {tls_client_fingerprint}
