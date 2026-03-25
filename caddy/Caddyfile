@@ -73,34 +73,33 @@
 }
 (fhem_basic_auth_secret_missing) {
 	@fhem_basic_auth_secret_missing {
-		expression {env.FHEM_BASIC_AUTH_HEADER} == ""
+		expression "{$FHEM_BASIC_AUTH_HEADER}" == ""
+	}
+}
+(fhem_client_cert_headers) {
+	header_up X-Client-Cert-Subject {tls_client_subject}
+	header_up X-Client-Cert-Serial {tls_client_serial}
+	header_up X-Client-Cert-Fingerprint {tls_client_fingerprint}
+}
+(fhem_transport) {
+	transport http {
+		tls_server_name zeus.fritz.box
+		tls_trust_pool file {
+			pem_file /etc/ssl/ca/certs/blausee_ca.crt
+		}
 	}
 }
 (fhem_upstream) {
 	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
-		header_up Authorization {env.FHEM_BASIC_AUTH_HEADER}
-		header_up X-Client-Cert-Subject {tls_client_subject}
-		header_up X-Client-Cert-Serial {tls_client_serial}
-		header_up X-Client-Cert-Fingerprint {tls_client_fingerprint}
-		transport http {
-			tls_server_name zeus.fritz.box
-			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/blausee_ca.crt
-			}
-		}
+		import fhem_client_cert_headers
+		import fhem_transport
 	}
 }
-(fhem_upstream_without_auth_header) {
+(fhem_upstream_with_auth_header) {
 	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
-		header_up X-Client-Cert-Subject {tls_client_subject}
-		header_up X-Client-Cert-Serial {tls_client_serial}
-		header_up X-Client-Cert-Fingerprint {tls_client_fingerprint}
-		transport http {
-			tls_server_name zeus.fritz.box
-			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/blausee_ca.crt
-			}
-		}
+		header_up Authorization {$FHEM_BASIC_AUTH_HEADER}
+		import fhem_client_cert_headers
+		import fhem_transport
 	}
 }
 (logging_info) {
@@ -139,17 +138,17 @@ fhem.{$CADDY_SUBDOMAIN} {
 		handle @missing_mTLS_cert {
 			import authelia_forward_auth
 			handle @fhem_basic_auth_secret_missing {
-				import fhem_upstream_without_auth_header
+				import fhem_upstream
 			}
 			handle {
-				import fhem_upstream
+				import fhem_upstream_with_auth_header
 			}
 		}
 		handle @fhem_basic_auth_secret_missing {
-			import fhem_upstream_without_auth_header
+			import fhem_upstream
 		}
 		handle {
-			import fhem_upstream
+			import fhem_upstream_with_auth_header
 		}
 	}
 	import logging_info
