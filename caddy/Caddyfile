@@ -90,6 +90,19 @@
 		}
 	}
 }
+(fhem_upstream_without_auth_header) {
+	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
+		header_up X-Client-Cert-Subject {tls_client_subject}
+		header_up X-Client-Cert-Serial {tls_client_serial}
+		header_up X-Client-Cert-Fingerprint {tls_client_fingerprint}
+		transport http {
+			tls_server_name zeus.fritz.box
+			tls_trust_pool file {
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
+			}
+		}
+	}
+}
 (logging_info) {
 	log {
 		level INFO
@@ -123,12 +136,17 @@ fhem.{$CADDY_SUBDOMAIN} {
 	import fhem_basic_auth_secret_missing
 	encode gzip
 	route {
-		handle @fhem_basic_auth_secret_missing {
-			respond "FHEM proxy basic auth is not configured" 503
-		}
 		handle @missing_mTLS_cert {
 			import authelia_forward_auth
-			import fhem_upstream
+			handle @fhem_basic_auth_secret_missing {
+				import fhem_upstream_without_auth_header
+			}
+			handle {
+				import fhem_upstream
+			}
+		}
+		handle @fhem_basic_auth_secret_missing {
+			import fhem_upstream_without_auth_header
 		}
 		handle {
 			import fhem_upstream

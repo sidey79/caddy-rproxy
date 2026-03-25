@@ -16,9 +16,8 @@ Authelia `forward_auth` check. In both cases Caddy injects the upstream
 `Authorization` header for FHEM from `FHEM_BASIC_AUTH_HEADER`. The value must be the
 full header value, for example `Basic base64(username:password)`.
 
-If `FHEM_BASIC_AUTH_HEADER` is unset, the FHEM route returns `503 Service Unavailable`
-instead of proxying traffic without backend credentials. This is the intentional
-fallback mode for misconfiguration.
+If `FHEM_BASIC_AUTH_HEADER` is unset, the FHEM route still proxies traffic but does
+not add an upstream `Authorization` header.
 
 When a valid client certificate is present, Caddy also forwards these headers to FHEM:
 
