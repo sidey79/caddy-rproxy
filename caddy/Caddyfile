@@ -76,18 +76,7 @@
 		expression {env.FHEM_BASIC_AUTH_HEADER} == ""
 	}
 }
-(fhem_with_static_basic_auth) {
-	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
-		header_up Authorization {env.FHEM_BASIC_AUTH_HEADER}
-		transport http {
-			tls_server_name zeus.fritz.box
-			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/blausee_ca.crt
-			}
-		}
-	}
-}
-(fhem_with_static_basic_auth_and_client_cert_headers) {
+(fhem_upstream) {
 	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
 		header_up Authorization {env.FHEM_BASIC_AUTH_HEADER}
 		header_up X-Client-Cert-Subject {tls_client_subject}
@@ -139,10 +128,10 @@ fhem.{$CADDY_SUBDOMAIN} {
 		}
 		handle @missing_mTLS_cert {
 			import authelia_forward_auth
-			import fhem_with_static_basic_auth
+			import fhem_upstream
 		}
 		handle {
-			import fhem_with_static_basic_auth_and_client_cert_headers
+			import fhem_upstream
 		}
 	}
 	import logging_info
