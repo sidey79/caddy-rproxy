@@ -71,6 +71,36 @@
 		copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
 	}
 }
+(fhem_basic_auth_secret_missing) {
+	@fhem_basic_auth_secret_missing {
+		expression {env.FHEM_BASIC_AUTH_HEADER} == ""
+	}
+}
+(fhem_with_static_basic_auth) {
+	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
+		header_up Authorization {env.FHEM_BASIC_AUTH_HEADER}
+		transport http {
+			tls_server_name zeus.fritz.box
+			tls_trust_pool file {
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
+			}
+		}
+	}
+}
+(fhem_with_static_basic_auth_and_client_cert_headers) {
+	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
+		header_up Authorization {env.FHEM_BASIC_AUTH_HEADER}
+		header_up X-Client-Cert-Subject {tls_client_subject}
+		header_up X-Client-Cert-Serial {tls_client_serial}
+		header_up X-Client-Cert-Fingerprint {tls_client_fingerprint}
+		transport http {
+			tls_server_name zeus.fritz.box
+			tls_trust_pool file {
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
+			}
+		}
+	}
+}
 (logging_info) {
 	log {
 		level INFO
@@ -99,14 +129,20 @@
 
 
 fhem.{$CADDY_SUBDOMAIN} {
-	import mTLS_required
+	import mTLS_optional
+	import missing_mTLS_cert
+	import fhem_basic_auth_secret_missing
 	encode gzip
-	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
-		transport http {
-			tls_server_name zeus.fritz.box
-			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/blausee_ca.crt
-			}
+	route {
+		handle @fhem_basic_auth_secret_missing {
+			respond "FHEM proxy basic auth is not configured" 503
+		}
+		handle @missing_mTLS_cert {
+			import authelia_forward_auth
+			import fhem_with_static_basic_auth
+		}
+		handle {
+			import fhem_with_static_basic_auth_and_client_cert_headers
 		}
 	}
 	import logging_info
