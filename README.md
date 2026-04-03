@@ -9,6 +9,22 @@ The reverse proxy exposes Authelia at `auth.{$CADDY_SUBDOMAIN}` and forwards tra
 
 Related stack: https://github.com/sidey79/authelia-docker
 
+## FHEM Authentication
+
+`fhem.{$CADDY_SUBDOMAIN}` accepts either a valid client certificate or a successful
+Authelia `forward_auth` check. In both cases Caddy injects the upstream
+`Authorization` header for FHEM from `FHEM_BASIC_AUTH_HEADER`. The value must be the
+full header value, for example `Basic base64(username:password)`.
+
+If `FHEM_BASIC_AUTH_HEADER` is unset, the FHEM route still proxies traffic but does
+not add an upstream `Authorization` header.
+
+When a valid client certificate is present, Caddy also forwards these headers to FHEM:
+
+- `X-Client-Cert-Serial`
+- `X-Client-Cert-Subject`
+- `X-Client-Cert-Fingerprint`
+
 The route uses `mTLS_optional`. The workflow host does not expose the n8n editor or any generic
 backend path. It only serves the local workflow asset store from `/assets/*`, protects the browser
 UI for `/webhook/github-pr-dashboard` with Authelia, and forwards the `POST` webhook request to
