@@ -9,6 +9,12 @@ The reverse proxy exposes Authelia at `auth.{$CADDY_SUBDOMAIN}` and forwards tra
 
 Related stack: https://github.com/sidey79/authelia-docker
 
+## Paperless Authentication
+
+`dms.{$CADDY_SUBDOMAIN}` is protected by Authelia `forward_auth` and no longer uses
+client-certificate access control. Caddy forwards the authenticated Authelia identity
+headers upstream so Paperless can authenticate users via `HTTP_REMOTE_USER`.
+
 ## FHEM Authentication
 
 `fhem.{$CADDY_SUBDOMAIN}` accepts either a valid client certificate or a successful
