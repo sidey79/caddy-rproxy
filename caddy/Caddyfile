@@ -155,8 +155,8 @@ fhem.{$CADDY_SUBDOMAIN} {
 }
 
 dms.{$CADDY_SUBDOMAIN} {
-	import mTLS_required
 	encode gzip
+	import authelia_forward_auth
 	reverse_proxy http://paperless-ngx-webserver-1.network_backend_net:8000
 	import logging_info
 }
