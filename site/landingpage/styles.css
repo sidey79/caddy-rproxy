@@ -1,0 +1,205 @@
+:root {
+  color-scheme: light;
+  --bg-top: #f5efe3;
+  --bg-bottom: #d8e2ec;
+  --panel: rgba(255, 255, 255, 0.78);
+  --panel-border: rgba(32, 49, 63, 0.12);
+  --text: #1d2d35;
+  --muted: #5d6b72;
+  --accent: #0e7c66;
+  --accent-soft: #d7efe8;
+  --shadow: 0 24px 60px rgba(24, 38, 47, 0.14);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --font-ui: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 38%),
+    linear-gradient(155deg, var(--bg-top), var(--bg-bottom));
+}
+
+.shell {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 4rem;
+}
+
+.hero,
+.section {
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  padding: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.9fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  max-width: 12ch;
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  line-height: 0.95;
+}
+
+.lead {
+  max-width: 62ch;
+  margin-top: 1rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.identity-card {
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(236, 246, 242, 0.96));
+  border: 1px solid rgba(14, 124, 102, 0.18);
+}
+
+.identity-label,
+.service-kicker {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.identity-name {
+  margin-top: 0.4rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.identity-meta {
+  margin-top: 0.45rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.role-pill {
+  display: inline-flex;
+  margin-top: 1rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.section {
+  margin-top: 1.4rem;
+  padding: 1.5rem;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.section-head p {
+  max-width: 54ch;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.service-card {
+  display: grid;
+  gap: 0.45rem;
+  min-height: 160px;
+  padding: 1rem;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(29, 45, 53, 0.08);
+  border-radius: var(--radius-md);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.service-card strong {
+  font-size: 1.25rem;
+}
+
+.service-card span:last-child {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.service-card:hover,
+.service-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: rgba(14, 124, 102, 0.28);
+  box-shadow: 0 16px 30px rgba(24, 38, 47, 0.12);
+}
+
+.note p {
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .shell {
+    width: min(100% - 1rem, 1120px);
+    padding-top: 1rem;
+  }
+
+  .hero,
+  .section {
+    padding: 1.2rem;
+    border-radius: 22px;
+  }
+
+  .hero-grid,
+  .section-head {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  h1 {
+    max-width: none;
+  }
+}

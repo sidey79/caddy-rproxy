@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Serviceportal</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">Authelia Landing Page</p>
+        <div class="hero-grid">
+          <div>
+            <h1>Dein Einstieg in die internen Dienste</h1>
+            <p class="lead">
+              Die Startseite zeigt Familien-Links standardmaessig und erweitert sich fuer Admins um
+              Infrastruktur, Automationen und technische Oberflaechen.
+            </p>
+          </div>
+          <aside class="identity-card" aria-live="polite">
+            <p class="identity-label">Sitzung</p>
+            <p class="identity-name" id="identity-name">Wird geladen</p>
+            <p class="identity-meta" id="identity-meta">Pruefe Authelia-Kontext</p>
+            <span class="role-pill" id="role-pill">unbekannt</span>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Alltag</h2>
+          <p>Direkte Links fuer Dokumente, Anmeldung und die Oberflaechen, die im Alltag relevant sind.</p>
+        </div>
+        <div class="card-grid">
+          <a class="service-card" data-subdomain="dms" href="#">
+            <span class="service-kicker">Dokumente</span>
+            <strong>Paperless</strong>
+            <span>Briefe, Rechnungen und Sucharchiv.</span>
+          </a>
+          <a class="service-card" data-subdomain="auth" href="#">
+            <span class="service-kicker">Anmeldung</span>
+            <strong>Authelia</strong>
+            <span>Login, Session und Zugriffsportal.</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section admin-only" id="admin-section" hidden>
+        <div class="section-head">
+          <h2>Admin</h2>
+          <p>Nur fuer Accounts mit Admin-Gruppe. Die Zielhosts werden aus der aktuellen Landing-Domain abgeleitet.</p>
+        </div>
+        <div class="card-grid">
+          <a class="service-card" data-subdomain="fhem" href="#">
+            <span class="service-kicker">Automation</span>
+            <strong>FHEM</strong>
+            <span>Zentrale Hausautomation und Geraetelogik.</span>
+          </a>
+          <a class="service-card" data-subdomain="ui" href="#">
+            <span class="service-kicker">Smart Home</span>
+            <strong>FTUI</strong>
+            <span>Bedienoberflaeche fuer Hausstatus und Schnellaktionen, zusaetzlich mTLS-geschuetzt.</span>
+          </a>
+          <a class="service-card" data-subdomain="bitwarden" href="#">
+            <span class="service-kicker">Sicherheit</span>
+            <strong>Bitwarden</strong>
+            <span>Passwortverwaltung und Admin-Oberflaeche.</span>
+          </a>
+          <a class="service-card" data-subdomain="workflow" data-path="/webhook/github-pr-dashboard" href="#">
+            <span class="service-kicker">Automationen</span>
+            <strong>GitHub PR Dashboard</strong>
+            <span>Statusansicht fuer Pull Requests ueber den Workflow-Host.</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section note">
+        <div class="section-head">
+          <h2>Hinweis</h2>
+        </div>
+        <p>
+          Diese Seite blendet nur Links ein oder aus. Die Zielsysteme muessen weiterhin selbst ueber
+          Authelia, mTLS oder eigene Anmeldung geschuetzt bleiben.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
