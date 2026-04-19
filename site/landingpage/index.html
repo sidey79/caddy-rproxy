@@ -10,7 +10,12 @@
   <body>
     <main class="shell">
       <section class="hero">
-        <p class="eyebrow">Authelia Landing Page</p>
+        <div class="hero-topline">
+          <p class="eyebrow">Authelia Landing Page</p>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">
+            <span class="theme-toggle-label">Darkmode</span>
+          </button>
+        </div>
         <div class="hero-grid">
           <div>
             <h1>Dein Einstieg in die internen Dienste</h1>
@@ -34,15 +39,30 @@
           <p>Direkte Links fuer Dokumente, Anmeldung und die Oberflaechen, die im Alltag relevant sind.</p>
         </div>
         <div class="card-grid">
-          <a class="service-card" data-subdomain="dms" href="#">
+          <a class="service-card service-card-amber" data-subdomain="dms" href="#">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <rect x="14" y="10" width="36" height="44" rx="8"></rect>
+                <path d="M22 24h20M22 32h20M22 40h12"></path>
+                <path d="M42 10v10h8"></path>
+              </svg>
+            </span>
             <span class="service-kicker">Dokumente</span>
-            <strong>Paperless</strong>
-            <span>Briefe, Rechnungen und Sucharchiv.</span>
+            <strong>Briefe und Unterlagen</strong>
+            <span>Rechnungen, Briefe und wichtige Dokumente schnell wiederfinden.</span>
           </a>
-          <a class="service-card" data-subdomain="auth" href="#">
+          <a class="service-card service-card-rose" data-subdomain="auth" href="#">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <rect x="12" y="28" width="40" height="24" rx="8"></rect>
+                <path d="M22 28v-6a10 10 0 0 1 20 0v6"></path>
+                <circle cx="32" cy="40" r="3"></circle>
+                <path d="M32 43v5"></path>
+              </svg>
+            </span>
             <span class="service-kicker">Anmeldung</span>
-            <strong>Authelia</strong>
-            <span>Login, Session und Zugriffsportal.</span>
+            <strong>Zugang und Sicherheit</strong>
+            <span>Anmeldung verwalten und geschuetzte Bereiche sicher erreichen.</span>
           </a>
         </div>
       </section>
@@ -53,25 +73,55 @@
           <p>Nur fuer Accounts mit Admin-Gruppe. Die Zielhosts werden aus der aktuellen Landing-Domain abgeleitet.</p>
         </div>
         <div class="card-grid">
-          <a class="service-card" data-subdomain="fhem" href="#">
+          <a class="service-card service-card-mint" data-subdomain="fhem" href="#">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <circle cx="20" cy="32" r="6"></circle>
+                <circle cx="44" cy="20" r="6"></circle>
+                <circle cx="44" cy="44" r="6"></circle>
+                <path d="M26 30l12-8M26 34l12 8"></path>
+              </svg>
+            </span>
             <span class="service-kicker">Automation</span>
-            <strong>FHEM</strong>
-            <span>Zentrale Hausautomation und Geraetelogik.</span>
+            <strong>Haussteuerung</strong>
+            <span>Automationen, Schalter und Geraete zentral verwalten.</span>
           </a>
-          <a class="service-card" data-subdomain="ui" href="#">
+          <a class="service-card service-card-sky" data-subdomain="ui" href="#">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <path d="M16 30a16 16 0 0 1 32 0v18H16z"></path>
+                <path d="M24 24a8 8 0 0 1 16 0"></path>
+                <path d="M24 48v-8M32 48v-12M40 48v-6"></path>
+              </svg>
+            </span>
             <span class="service-kicker">Smart Home</span>
-            <strong>FTUI</strong>
-            <span>Bedienoberflaeche fuer Hausstatus und Schnellaktionen, zusaetzlich mTLS-geschuetzt.</span>
+            <strong>Wohnung im Blick</strong>
+            <span>Status sehen und Schnellaktionen nutzen, mit zusaetzlichem Zertifikatsschutz.</span>
           </a>
-          <a class="service-card" data-subdomain="bitwarden" href="#">
+          <a class="service-card service-card-violet" data-subdomain="bitwarden" href="#">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <path d="M32 10l16 6v12c0 12-7 20-16 26-9-6-16-14-16-26V16z"></path>
+                <rect x="25" y="26" width="14" height="12" rx="3"></rect>
+                <path d="M28 26v-3a4 4 0 0 1 8 0v3"></path>
+              </svg>
+            </span>
             <span class="service-kicker">Sicherheit</span>
-            <strong>Bitwarden</strong>
-            <span>Passwortverwaltung und Admin-Oberflaeche.</span>
+            <strong>Passwoerter und Zugaenge</strong>
+            <span>Wichtige Logins sicher ablegen und verwalten.</span>
           </a>
-          <a class="service-card" data-subdomain="workflow" data-path="/webhook/github-pr-dashboard" href="#">
+          <a class="service-card service-card-coral" data-subdomain="workflow" data-path="/webhook/github-pr-dashboard" href="#">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <rect x="12" y="14" width="40" height="36" rx="8"></rect>
+                <path d="M22 38l6-8 6 4 8-12"></path>
+                <path d="M22 24h20"></path>
+                <circle cx="42" cy="22" r="2"></circle>
+              </svg>
+            </span>
             <span class="service-kicker">Automationen</span>
-            <strong>GitHub PR Dashboard</strong>
-            <span>Statusansicht fuer Pull Requests ueber den Workflow-Host.</span>
+            <strong>Projektstatus</strong>
+            <span>Technische Arbeitsstaende und laufende Aenderungen schnell ueberblicken.</span>
           </a>
         </div>
       </section>

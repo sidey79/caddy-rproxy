@@ -10,6 +10,42 @@ function buildServiceUrl(subdomain, path = "") {
   return `https://${subdomain}.${baseHost}${normalizedPath}`;
 }
 
+function getPreferredTheme() {
+  const storedTheme = window.localStorage.getItem("landing-theme");
+  if (storedTheme === "light" || storedTheme === "dark") {
+    return storedTheme;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  const themeToggle = document.getElementById("theme-toggle");
+  root.dataset.theme = theme;
+
+  if (themeToggle) {
+    const darkActive = theme === "dark";
+    themeToggle.setAttribute("aria-pressed", darkActive ? "true" : "false");
+    themeToggle.querySelector(".theme-toggle-label").textContent = darkActive ? "Hellmodus" : "Darkmode";
+  }
+}
+
+function initializeThemeToggle() {
+  const themeToggle = document.getElementById("theme-toggle");
+  applyTheme(getPreferredTheme());
+
+  if (!themeToggle) {
+    return;
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    window.localStorage.setItem("landing-theme", nextTheme);
+    applyTheme(nextTheme);
+  });
+}
+
 function hydrateLinks() {
   const links = document.querySelectorAll("[data-subdomain]");
   links.forEach((link) => {
@@ -71,5 +107,6 @@ async function loadProfile() {
   }
 }
 
+initializeThemeToggle();
 hydrateLinks();
 loadProfile();
