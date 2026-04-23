@@ -247,10 +247,36 @@ ui.{$CADDY_SUBDOMAIN} {
 	}
 }
 
+landing.{$CADDY_SUBDOMAIN} {
+	encode gzip
+	@landingApiMe {
+		method GET HEAD
+		path /api/me
+	}
+	route {
+		handle @landingApiMe {
+			import authelia_forward_auth
+			rewrite * /webhook/landing/api/me
+			import n8n_upstream
+		}
+		handle {
+			import authelia_forward_auth
+			root * /srv/landingpage
+			try_files {path} /index.html
+			file_server
+		}
+	}
+	import logging_info
+}
+
 workflow.{$CADDY_SUBDOMAIN} {
 	import mTLS_optional
 	@workflowAssets {
 		path /assets/*
+	}
+	@apiMe {
+		method GET HEAD
+		path /api/me
 	}
 	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
 	@telegramReissueWebhook {
@@ -270,6 +296,11 @@ workflow.{$CADDY_SUBDOMAIN} {
 		handle @workflowAssets {
 			root * /srv/workflow
 			file_server
+		}
+		handle @apiMe {
+			import authelia_forward_auth
+			rewrite * /webhook/landing/api/me
+			import n8n_upstream
 		}
 		handle @telegramReissueWebhook {
 			import n8n_upstream
