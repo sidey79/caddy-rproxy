@@ -176,22 +176,10 @@ auth.{$CADDY_SUBDOMAIN} {
 (admin_redir) {
 	@admin {
 		path /admin*
-		not remote_ip private_ranges
 	}
 	redir @admin /
 }
-
-bitwarden.{$CADDY_SUBDOMAIN} {
-	encode gzip
-	import admin_redir
-	route {
-		@tasks path /api/tasks
-		handle @tasks {
-			header Content-Type application/json
-			respond `{"data":[],"object":"list"}` 200
-		}
-	}
-	# If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
+(bitwarden_security_headers) {
 	header / {
 		# Enable HTTP Strict Transport Security (HSTS)
 		Strict-Transport-Security "max-age=31536000;"
@@ -210,9 +198,44 @@ bitwarden.{$CADDY_SUBDOMAIN} {
 		# Remove Last-Modified because etag is the same and is as effective
 		-Last-Modified
 	}
+}
+(bitwarden_upstream) {
 	reverse_proxy http://bitwarden.network_backend_net:8889 {
 		header_up X-Real-IP {remote_host}
 	}
+}
+
+bitwarden.{$CADDY_SUBDOMAIN} {
+	encode gzip
+	import admin_redir
+	route {
+		@tasks path /api/tasks
+		handle @tasks {
+			header Content-Type application/json
+			respond `{"data":[],"object":"list"}` 200
+		}
+	}
+	# If you want to use FIDO2 WebAuthn, set X-Frame-Options to "SAMEORIGIN" or the Browser will block those requests
+	import bitwarden_security_headers
+	import bitwarden_upstream
+	import logging_info
+}
+
+bitwarden.{$CADDY_SUBDOMAIN3} {
+	tls {
+		issuer internal {
+			ca blausee_ca
+		}
+		client_auth {
+			mode require_and_verify
+			trust_pool file {
+				pem_file /etc/ssl/ca/certs/blausee_ca.crt
+			}
+		}
+	}
+	encode gzip
+	import bitwarden_security_headers
+	import bitwarden_upstream
 	import logging_info
 }
 
