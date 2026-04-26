@@ -180,13 +180,16 @@ auth.{$CADDY_SUBDOMAIN} {
 	redir @admin /
 }
 (bitwarden_security_headers) {
+	import bitwarden_frame_options DENY
+}
+(bitwarden_frame_options) {
 	header / {
 		# Enable HTTP Strict Transport Security (HSTS)
 		Strict-Transport-Security "max-age=31536000;"
 		# Disable cross-site filter (XSS)
 		X-XSS-Protection "0"
 		# Disallow the site to be rendered within a frame (clickjacking protection)
-		X-Frame-Options "DENY"
+		X-Frame-Options "{args[0]}"
 		# Prevent search engines from indexing (optional)
 		X-Robots-Tag "noindex, nofollow"
 		# Disallow sniffing of X-Content-Type-Options
@@ -226,15 +229,9 @@ bitwarden.{$CADDY_SUBDOMAIN3} {
 		issuer internal {
 			ca blausee_ca
 		}
-		client_auth {
-			mode require_and_verify
-			trust_pool file {
-				pem_file /etc/ssl/ca/certs/blausee_ca.crt
-			}
-		}
 	}
 	encode gzip
-	import bitwarden_security_headers
+	import bitwarden_frame_options SAMEORIGIN
 	import bitwarden_upstream
 	import logging_info
 }
