@@ -339,16 +339,13 @@ workflow.{$CADDY_SUBDOMAIN} {
 			import n8n_upstream
 		}
 		handle @antannahAlexaGeminiWebhook {
-			uri replace /antannah ""
 			import n8n_upstream
 		}
 		handle @antannahAlexaGeminiWebhookMtls {
-			uri replace /antannah ""
 			import n8n_upstream
 		}
 		handle @antannahAlexaGeminiWebhookAuthelia {
 			import authelia_forward_auth
-			uri replace /antannah ""
 			import n8n_upstream
 		}
 		handle @webhooksMtls {
