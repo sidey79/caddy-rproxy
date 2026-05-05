@@ -305,10 +305,9 @@ workflow.{$CADDY_SUBDOMAIN} {
 		path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
 	}
 	# Allow the external Alexa/Gemini integration to call only its dedicated n8n webhook alias without mTLS.
-	@antannahAlexaGeminiSecretWebhook {
+	@antannahAlexaGeminiWebhook {
 		method POST
 		path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini
-		expression "{$ANTANNAH_WEBHOOK_SECRET}" != "" && header({'X-Antannah-Webhook-Secret'}) == "{$ANTANNAH_WEBHOOK_SECRET}"
 	}
 	@antannahAlexaGeminiWebhookMtls {
 		path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini
@@ -339,7 +338,7 @@ workflow.{$CADDY_SUBDOMAIN} {
 		handle @telegramReissueWebhook {
 			import n8n_upstream
 		}
-		handle @antannahAlexaGeminiSecretWebhook {
+		handle @antannahAlexaGeminiWebhook {
 			uri replace /antannah ""
 			import n8n_upstream
 		}
