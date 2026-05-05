@@ -65,7 +65,9 @@ The workflow host also exposes dedicated aliases for the Alexa/Gemini workflow:
 - `/webhook/antannah/alexa-gemini` -> `/webhook/alexa-gemini`
 - `/webhook-test/antannah/alexa-gemini` -> `/webhook-test/alexa-gemini`
 
-These aliases keep the public URL separate from other webhooks while leaving the n8n registration path unchanged. They use the same mTLS/Authelia handling as the other n8n webhook paths.
+These aliases keep the public URL separate from other webhooks while leaving the n8n registration path unchanged. They use the same mTLS/Authelia handling as the other n8n webhook paths by default.
+
+Set `ANTANNAH_WEBHOOK_SECRET` to allow `POST` requests to these aliases without mTLS when the caller sends the same value in `X-Antannah-Webhook-Secret`. If the secret is unset or the header does not match, the request falls back to the normal mTLS/Authelia handling.
 
 `docker compose up` starts a one-shot `fetch-workflow-assets` service before Caddy. It downloads `github-pr-dashboard.css` from `sidey79/n8n_wf_build` into `site/workflow/assets/`.
 
