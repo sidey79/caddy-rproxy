@@ -309,14 +309,6 @@ workflow.{$CADDY_SUBDOMAIN} {
 		method POST
 		path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini
 	}
-	@antannahAlexaGeminiWebhookMtls {
-		path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini
-		expression {tls_client_subject} != ""
-	}
-	@antannahAlexaGeminiWebhookAuthelia {
-		path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini
-		expression {tls_client_subject} == ""
-	}
 	@webhooksMtls {
 		path /webhook/* /webhook-test/*
 		expression {tls_client_subject} != ""
@@ -339,13 +331,6 @@ workflow.{$CADDY_SUBDOMAIN} {
 			import n8n_upstream
 		}
 		handle @antannahAlexaGeminiWebhook {
-			import n8n_upstream
-		}
-		handle @antannahAlexaGeminiWebhookMtls {
-			import n8n_upstream
-		}
-		handle @antannahAlexaGeminiWebhookAuthelia {
-			import authelia_forward_auth
 			import n8n_upstream
 		}
 		handle @webhooksMtls {
