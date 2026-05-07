@@ -304,10 +304,10 @@ workflow.{$CADDY_SUBDOMAIN} {
 		header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
 		path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
 	}
-	# Allow the external Alexa/Gemini integration to call only its dedicated n8n webhook alias without mTLS.
-	@antannahAlexaGeminiWebhook {
+	# Allow the external Alexa/Gemini integrations to call only their dedicated n8n webhook aliases without mTLS.
+	@alexaGeminiWebhook {
 		method POST
-		path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini
+		path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini /webhook/sven/alexa-gemini /webhook-test/sven/alexa-gemini
 	}
 	@webhooksMtls {
 		path /webhook/* /webhook-test/*
@@ -330,7 +330,7 @@ workflow.{$CADDY_SUBDOMAIN} {
 		handle @telegramReissueWebhook {
 			import n8n_upstream
 		}
-		handle @antannahAlexaGeminiWebhook {
+		handle @alexaGeminiWebhook {
 			import n8n_upstream
 		}
 		handle @webhooksMtls {
