@@ -60,6 +60,15 @@ Set `TELEGRAM_WEBHOOK_SECRET` to the same value used by the Scanservjs Telegram 
 
 All other `workflow.*` paths remain protected by the existing mTLS policy.
 
+The workflow host also exposes dedicated aliases for the Alexa/Gemini workflow:
+
+- `/webhook/antannah/alexa-gemini`
+- `/webhook-test/antannah/alexa-gemini`
+- `/webhook/sven/alexa-gemini`
+- `/webhook-test/sven/alexa-gemini`
+
+`POST` requests to these paths bypass mTLS and Authelia; other methods and webhook paths keep the normal mTLS/Authelia handling.
+
 `docker compose up` starts a one-shot `fetch-workflow-assets` service before Caddy. It downloads `github-pr-dashboard.css` from `sidey79/n8n_wf_build` into `site/workflow/assets/`.
 
 Set `GITHUB_TOKEN` to a fine-grained GitHub token with read access to repository contents. Optionally set `GITHUB_ASSET_REF` to fetch from a branch or tag other than `main`.
