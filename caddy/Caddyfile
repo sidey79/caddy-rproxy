@@ -84,7 +84,7 @@
 (fhem_transport) {
 	transport http {
 		versions 1.1
-		keepalive 30s
+		keepalive off
 		tls_server_name zeus.fritz.box
 		tls_trust_pool file {
 			pem_file /etc/ssl/ca/certs/blausee_ca.crt
