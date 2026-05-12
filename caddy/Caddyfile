@@ -300,6 +300,10 @@ workflow.{$CADDY_SUBDOMAIN} {
 		method GET HEAD
 		path /api/me
 	}
+	@oauth2Credential {
+		method GET HEAD OPTIONS
+		path /rest/oauth2-credential*
+	}
 	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
 	@telegramReissueWebhook {
 		method POST
@@ -327,6 +331,9 @@ workflow.{$CADDY_SUBDOMAIN} {
 		handle @apiMe {
 			import authelia_forward_auth
 			rewrite * /webhook/landing/api/me
+			import n8n_upstream
+		}
+		handle @oauth2Credential {
 			import n8n_upstream
 		}
 		handle @telegramReissueWebhook {

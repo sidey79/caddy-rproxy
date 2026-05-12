@@ -41,6 +41,10 @@ client certificate is provided, selected certificate metadata is forwarded to Au
 - `X-Client-Cert-Subject`
 - `X-Client-Cert-Fingerprint`
 
+The workflow host also forwards `GET/HEAD/OPTIONS /rest/oauth2-credential*` directly to n8n. This
+keeps n8n OAuth2 callback URLs such as `https://workflow.sidey.blausee.eu/rest/oauth2-credential`
+reachable by external OAuth providers without exposing the generic n8n editor or REST API.
+
 ## Landing Page
 
 `landing.{$CADDY_SUBDOMAIN}` is protected by Authelia and serves static files from
