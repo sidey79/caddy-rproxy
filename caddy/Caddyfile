@@ -295,6 +295,7 @@ workflow.{$CADDY_SUBDOMAIN} {
 	import mTLS_optional
 	@workflowAssets {
 		path /assets/*
+		expression {tls_client_fingerprint} == "" && {tls_client_serial} == "" && {tls_client_subject} == ""
 	}
 	@apiMe {
 		method GET HEAD
@@ -317,11 +318,14 @@ workflow.{$CADDY_SUBDOMAIN} {
 	}
 	@webhooksMtls {
 		path /webhook/* /webhook-test/*
-		expression {tls_client_subject} != ""
+		expression {tls_client_fingerprint} != "" || {tls_client_serial} != "" || {tls_client_subject} != ""
 	}
 	@webhooksAuthelia {
 		path /webhook/* /webhook-test/*
-		expression {tls_client_subject} == ""
+		expression {tls_client_fingerprint} == "" && {tls_client_serial} == "" && {tls_client_subject} == ""
+	}
+	@workflowMtls {
+		expression {tls_client_fingerprint} != "" || {tls_client_serial} != "" || {tls_client_subject} != ""
 	}
 	route {
 		handle @workflowAssets {
@@ -347,6 +351,9 @@ workflow.{$CADDY_SUBDOMAIN} {
 		}
 		handle @webhooksAuthelia {
 			import authelia_forward_auth
+			import n8n_upstream
+		}
+		handle @workflowMtls {
 			import n8n_upstream
 		}
 	}
