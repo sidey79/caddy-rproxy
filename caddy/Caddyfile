@@ -295,7 +295,6 @@ workflow.{$CADDY_SUBDOMAIN} {
 	import mTLS_optional
 	@workflowAssets {
 		path /assets/*
-		expression {tls_client_fingerprint} == "" && {tls_client_serial} == "" && {tls_client_subject} == ""
 	}
 	@apiMe {
 		method GET HEAD
