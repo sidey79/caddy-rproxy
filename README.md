@@ -31,11 +31,12 @@ When a valid client certificate is present, Caddy also forwards these headers to
 - `X-Client-Cert-Subject`
 - `X-Client-Cert-Fingerprint`
 
-The route uses `mTLS_optional`. The workflow host does not expose the n8n editor or any generic
-backend path. It only serves the local workflow asset store from `/assets/*`, exposes `GET/HEAD
-/api/me` behind Authelia without requiring a client certificate, protects the browser UI for
-`/webhook/github-pr-dashboard` with Authelia, and forwards the `POST` webhook request to n8n. If a
-client certificate is provided, selected certificate metadata is forwarded to Authelia via headers:
+The route uses `mTLS_optional`. Without a client certificate, the workflow host only serves the
+local workflow asset store from `/assets/*`, exposes `GET/HEAD /api/me` behind Authelia without
+requiring a client certificate, protects the browser UI for `/webhook/github-pr-dashboard` with
+Authelia, and forwards the `POST` webhook request to n8n. With a client certificate, all remaining
+`workflow.*` paths are forwarded to n8n after the explicit path exceptions have been evaluated. If a
+client certificate is provided, selected certificate metadata is forwarded upstream via headers:
 
 - `X-Client-Cert-Serial`
 - `X-Client-Cert-Subject`
@@ -43,7 +44,8 @@ client certificate is provided, selected certificate metadata is forwarded to Au
 
 The workflow host also forwards `GET/HEAD/OPTIONS /rest/oauth2-credential*` directly to n8n. This
 keeps n8n OAuth2 callback URLs such as `https://workflow.sidey.blausee.eu/rest/oauth2-credential`
-reachable by external OAuth providers without exposing the generic n8n editor or REST API.
+reachable by external OAuth providers without exposing the generic n8n editor or REST API to clients
+without a certificate.
 
 ## Landing Page
 
@@ -62,7 +64,7 @@ Set `TELEGRAM_WEBHOOK_SECRET` to the same value used by the Scanservjs Telegram 
 - `POST /webhook/scanservjs/telegram/reissue`
 - `POST /webhook-test/scanservjs/telegram/reissue`
 
-All other `workflow.*` paths remain protected by the existing mTLS policy.
+All other `workflow.*` paths require a client certificate and are then forwarded to n8n.
 
 The workflow host also exposes dedicated aliases for the Alexa/Gemini workflow:
 
