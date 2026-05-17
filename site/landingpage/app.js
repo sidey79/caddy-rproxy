@@ -86,6 +86,49 @@ function renderFallback(error) {
   rolePill.textContent = "family";
 }
 
+function renderBackupStatus(data) {
+  const target = document.getElementById("backup-status");
+  if (!target) return;
+
+  const map = {
+    ok: "Backup OK",
+    warn: "Backup mit Warnungen",
+    error: "Backup fehlgeschlagen",
+    unknown: "Backupstatus unbekannt",
+  };
+
+  const status = data?.status || "unknown";
+  const label = map[status] || map.unknown;
+  const checkedAt = data?.checkedAt ? new Date(data.checkedAt).toLocaleString("de-DE") : "keine Daten";
+  const backupName = data?.backupName ? ` (${data.backupName})` : "";
+
+  target.textContent = `${label}${backupName} • Stand: ${checkedAt}`;
+}
+
+async function loadBackupStatus() {
+  try {
+    const response = await fetch("/duplicati/webhook/duplicati-status-public", {
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    renderBackupStatus(payload);
+  } catch (error) {
+    const target = document.getElementById("backup-status");
+    if (target) {
+      target.textContent = `Backupstatus konnte nicht geladen werden (${error instanceof Error ? error.message : String(error)})`;
+    }
+  }
+}
+
 async function loadProfile() {
   try {
     const response = await fetch("/api/me", {
@@ -110,3 +153,4 @@ async function loadProfile() {
 initializeThemeToggle();
 hydrateLinks();
 loadProfile();
+loadBackupStatus();
