@@ -285,8 +285,9 @@ landing.{$CADDY_SUBDOMAIN} {
 			rewrite * /webhook/landing/api/me
 			import n8n_upstream
 		}
-		handle_path @landingDuplicati {
+		handle @landingDuplicati {
 			import authelia_forward_auth
+			uri strip_prefix /duplicati
 			import n8n_upstream
 		}
 		handle {
