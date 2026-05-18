@@ -313,14 +313,6 @@ workflow.{$CADDY_SUBDOMAIN} {
 		method GET HEAD OPTIONS
 		path /rest/oauth2-credential*
 	}
-	@duplicatiWebhooksNoMtls {
-		path /webhook/duplicati/* /webhook-test/duplicati/*
-		expression {tls_client_fingerprint} == "" && {tls_client_serial} == "" && {tls_client_subject} == ""
-	}
-	@duplicatiWebhooksMtls {
-		path /webhook/duplicati/* /webhook-test/duplicati/*
-		expression {tls_client_fingerprint} != "" || {tls_client_serial} != "" || {tls_client_subject} != ""
-	}
 	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
 	@telegramReissueWebhook {
 		method POST
@@ -354,12 +346,6 @@ workflow.{$CADDY_SUBDOMAIN} {
 			import n8n_upstream
 		}
 		handle @oauth2Credential {
-			import n8n_upstream
-		}
-		handle @duplicatiWebhooksNoMtls {
-			respond "mTLS required for duplicati webhooks" 403
-		}
-		handle @duplicatiWebhooksMtls {
 			import n8n_upstream
 		}
 		handle @telegramReissueWebhook {
