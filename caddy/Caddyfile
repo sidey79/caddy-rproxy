@@ -275,6 +275,10 @@ landing.{$CADDY_SUBDOMAIN} {
 		method GET HEAD
 		path /api/me
 	}
+	@landingDuplicatiStatus {
+		method GET HEAD
+		path /duplicati/status
+	}
 	@landingDuplicati {
 		method GET HEAD
 		path /duplicati/*
@@ -283,6 +287,11 @@ landing.{$CADDY_SUBDOMAIN} {
 		handle @landingApiMe {
 			import authelia_forward_auth
 			rewrite * /webhook/landing/api/me
+			import n8n_upstream
+		}
+		handle @landingDuplicatiStatus {
+			import authelia_forward_auth
+			rewrite * /webhook/duplicati/duplicati-status-public
 			import n8n_upstream
 		}
 		handle @landingDuplicati {

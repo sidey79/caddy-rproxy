@@ -107,7 +107,7 @@ function renderBackupStatus(data) {
 
 async function loadBackupStatus() {
   try {
-    const response = await fetch("/duplicati/webhook/duplicati/duplicati-status-public", {
+    const response = await fetch("/duplicati/status", {
       credentials: "same-origin",
       headers: {
         Accept: "application/json",
