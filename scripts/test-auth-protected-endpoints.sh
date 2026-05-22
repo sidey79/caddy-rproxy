@@ -13,10 +13,20 @@ fail() {
   exit 1
 }
 
+has_fixed_string() {
+  local pattern="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -n --fixed-strings "$pattern" "$file" >/dev/null
+  else
+    grep -nF -- "$pattern" "$file" >/dev/null
+  fi
+}
+
 require_pattern() {
   local pattern="$1"
   local msg="$2"
-  if ! rg -n --fixed-strings "$pattern" "$CADDYFILE" >/dev/null; then
+  if ! has_fixed_string "$pattern" "$CADDYFILE"; then
     fail "$msg"
   fi
 }
@@ -24,7 +34,7 @@ require_pattern() {
 forbid_pattern() {
   local pattern="$1"
   local msg="$2"
-  if rg -n --fixed-strings "$pattern" "$CADDYFILE" >/dev/null; then
+  if has_fixed_string "$pattern" "$CADDYFILE"; then
     fail "$msg"
   fi
 }

@@ -1,28 +1,28 @@
 name: caddy-rproxy-e2e
 
 services:
-  caddy-e2e:
-    image: caddy:2.11.3@sha256:ec18ee54aab3315c22e25f3b2babda73ff8007d39b13b3bd1bfffa2f0444c7d9
-    environment:
-      TELEGRAM_WEBHOOK_SECRET: test-telegram-secret
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-    ports:
-      - "18080:80"
-    depends_on:
-      - authelia
-      - n8n-mock
-
   authelia:
     image: python:3.12-alpine
-    working_dir: /app
     volumes:
       - ./mock_auth.py:/app/mock_auth.py:ro
     command: ["python3", "/app/mock_auth.py"]
+    working_dir: /app
+
+  caddy-e2e:
+    image: caddy:2.11.3@sha256:ec18ee54aab3315c22e25f3b2babda73ff8007d39b13b3bd1bfffa2f0444c7d9
+    depends_on:
+      - authelia
+      - n8n-mock
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    environment:
+      TELEGRAM_WEBHOOK_SECRET: test-telegram-secret
+    ports:
+      - "127.0.0.1:18080:80"
 
   n8n-mock:
     image: python:3.12-alpine
-    working_dir: /app
     volumes:
       - ./mock_n8n.py:/app/mock_n8n.py:ro
     command: ["python3", "/app/mock_n8n.py"]
+    working_dir: /app
