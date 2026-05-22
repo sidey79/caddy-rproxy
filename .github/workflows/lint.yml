@@ -56,3 +56,13 @@ jobs:
       - name: Verify auth-protected endpoint policy
         run: |
           bash scripts/test-auth-protected-endpoints.sh caddy/Caddyfile
+
+  endpoint-authz-e2e:
+    name: runner / endpoint-authz-e2e
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+      - name: Run E2E auth endpoint checks
+        run: |
+          bash scripts/test-auth-endpoints-e2e.sh

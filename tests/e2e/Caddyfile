@@ -1,0 +1,116 @@
+{
+  auto_https off
+  admin off
+}
+
+(authelia_forward_auth) {
+  forward_auth authelia:9091 {
+    uri /api/authz/forward-auth
+    copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+  }
+}
+
+(n8n_upstream) {
+  reverse_proxy http://n8n-mock:5678
+}
+
+http://landing.test {
+  encode gzip
+
+  @landingApiMe {
+    method GET HEAD
+    path /api/me
+  }
+
+  @landingBackupStatus {
+    method GET HEAD
+    path /backup/status
+  }
+
+  @landingBackupNames {
+    method GET HEAD
+    path /backup/names
+  }
+
+  route {
+    handle @landingApiMe {
+      import authelia_forward_auth
+      rewrite * /webhook/landing/api/me
+      import n8n_upstream
+    }
+
+    handle @landingBackupStatus {
+      import authelia_forward_auth
+      rewrite * /webhook/backup/status-public
+      import n8n_upstream
+    }
+
+    handle @landingBackupNames {
+      import authelia_forward_auth
+      rewrite * /webhook/backup/names
+      import n8n_upstream
+    }
+
+    handle {
+      import authelia_forward_auth
+      respond "landing static" 404
+    }
+  }
+}
+
+http://workflow.test {
+  @apiMe {
+    method GET HEAD
+    path /api/me
+  }
+
+  @oauth2Credential {
+    method GET HEAD OPTIONS
+    path /rest/oauth2-credential*
+  }
+
+  @telegramReissueWebhook {
+    method POST
+    header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
+    path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
+  }
+
+  @alexaGeminiWebhook {
+    method POST
+    path /webhook/antannah/alexa-gemini /webhook-test/antannah/alexa-gemini /webhook/sven/alexa-gemini /webhook-test/sven/alexa-gemini
+  }
+
+  # In this HTTP-only e2e setup, mTLS vars are empty, so all webhooks go via Authelia unless explicit exceptions above.
+  @webhooksAuthelia {
+    path /webhook/* /webhook-test/*
+  }
+
+  route {
+    handle @apiMe {
+      import authelia_forward_auth
+      rewrite * /webhook/landing/api/me
+      import n8n_upstream
+    }
+
+    handle @oauth2Credential {
+      import n8n_upstream
+    }
+
+    handle @telegramReissueWebhook {
+      import n8n_upstream
+    }
+
+    handle @alexaGeminiWebhook {
+      import n8n_upstream
+    }
+
+    handle @webhooksAuthelia {
+      import authelia_forward_auth
+      import n8n_upstream
+    }
+
+    handle {
+      respond "workflow fallback" 404
+    }
+  }
+}
