@@ -107,7 +107,7 @@ function renderBackupStatus(data) {
 
 async function loadBackupStatus() {
   try {
-    const response = await fetch("/duplicati/status", {
+    const response = await fetch("/backup/status", {
       credentials: "same-origin",
       headers: {
         Accept: "application/json",
