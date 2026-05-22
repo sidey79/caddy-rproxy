@@ -46,3 +46,13 @@ jobs:
             -v "$RUNNER_TEMP/caddy-ca/private:/etc/ssl/ca/private:ro" \
             -w /work \
             "$CADDY_IMAGE" sh -lc 'caddy validate --config /work/caddy/Caddyfile'
+
+  endpoint-authz-policy:
+    name: runner / endpoint-authz-policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+      - name: Verify auth-protected endpoint policy
+        run: |
+          bash scripts/test-auth-protected-endpoints.sh caddy/Caddyfile
