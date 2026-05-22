@@ -105,7 +105,7 @@ function renderBackupStatusList(payload) {
 
   if (!backups.length) {
     statusTarget.textContent = "Keine Backupdaten vorhanden.";
-    listTarget.innerHTML = "";
+    listTarget.replaceChildren();
     return;
   }
 
@@ -116,14 +116,19 @@ function renderBackupStatusList(payload) {
 
   statusTarget.textContent = `Backups: ${backups.length} • Letztes Update: ${latestText}`;
 
-  listTarget.innerHTML = backups
-    .map((backup) => {
-      const name = backup.backupName || "unbekannt";
-      const label = mapStatusLabel(backup.status);
-      const checkedAt = backup.lastCheckedAt ? new Date(backup.lastCheckedAt).toLocaleString("de-DE") : "keine Daten";
-      return `<li><strong>${name}</strong>: ${label} • Stand: ${checkedAt}</li>`;
-    })
-    .join("");
+  listTarget.replaceChildren();
+  backups.forEach((backup) => {
+    const name = backup.backupName || "unbekannt";
+    const label = mapStatusLabel(backup.status);
+    const checkedAt = backup.lastCheckedAt ? new Date(backup.lastCheckedAt).toLocaleString("de-DE") : "keine Daten";
+
+    const li = document.createElement("li");
+    const strong = document.createElement("strong");
+    strong.textContent = name;
+    li.appendChild(strong);
+    li.appendChild(document.createTextNode(`: ${label} • Stand: ${checkedAt}`));
+    listTarget.appendChild(li);
+  });
 }
 
 async function loadBackupStatus() {
@@ -146,7 +151,11 @@ async function loadBackupStatus() {
     const contentType = response.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
       const text = await response.text();
-      throw new Error(`Unerwartete Antwort (${contentType || "kein Content-Type"}): ${text.slice(0, 60)}`);
+      throw new Error(
+        `Unerwartete Antwort (${contentType || "kein Content-Type"}). ` +
+        `Haeufige Ursache: Landing/Proxy liefert HTML statt /backup/names-JSON. ` +
+        `Vorschau: ${text.slice(0, 80)}`
+      );
     }
 
     const payload = await response.json();
@@ -156,7 +165,7 @@ async function loadBackupStatus() {
       target.textContent = `Backupstatus konnte nicht geladen werden (${error instanceof Error ? error.message : String(error)})`;
     }
     if (listTarget) {
-      listTarget.innerHTML = "";
+      listTarget.replaceChildren();
     }
   }
 }
