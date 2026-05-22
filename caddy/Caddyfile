@@ -325,7 +325,7 @@ workflow.{$CADDY_SUBDOMAIN} {
 	# Allow Telegram to call only the Scanservjs token reissue webhook without mTLS.
 	@telegramReissueWebhook {
 		method POST
-		header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}
+		expression {header.X-Telegram-Bot-Api-Secret-Token} == "{$TELEGRAM_WEBHOOK_SECRET}"
 		path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue
 	}
 	# Allow the external Alexa/Gemini integrations to call only their dedicated n8n webhook aliases without mTLS.
