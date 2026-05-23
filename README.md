@@ -27,7 +27,7 @@ not add an upstream `Authorization` header.
 
 When a valid client certificate is present, Caddy also forwards these headers to FHEM:
 
-- `X-Client-Cert-Serial` (hex serial string)
+- `X-Client-Cert-Serial`
 - `X-Client-Cert-Subject`
 - `X-Client-Cert-Fingerprint`
 
