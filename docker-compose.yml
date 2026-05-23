@@ -24,6 +24,7 @@ services:
       TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
     networks:
       backend_net:
+        ipv4_address: 172.28.19.8
       homelan:
         ipv4_address: 10.2.11.19
         ipv6_address: fd00:10:2:11::19
