@@ -275,10 +275,28 @@ landing.{$CADDY_SUBDOMAIN} {
 		method GET HEAD
 		path /api/me
 	}
+	@landingBackupStatus {
+		method GET HEAD
+		path /backup/status
+	}
+	@landingBackupNames {
+		method GET HEAD
+		path /backup/names
+	}
 	route {
 		handle @landingApiMe {
 			import authelia_forward_auth
 			rewrite * /webhook/landing/api/me
+			import n8n_upstream
+		}
+		handle @landingBackupStatus {
+			import authelia_forward_auth
+			rewrite * /webhook/backup/status-public
+			import n8n_upstream
+		}
+		handle @landingBackupNames {
+			import authelia_forward_auth
+			rewrite * /webhook/backup/names
 			import n8n_upstream
 		}
 		handle {

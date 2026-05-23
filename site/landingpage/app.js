@@ -86,6 +86,90 @@ function renderFallback(error) {
   rolePill.textContent = "family";
 }
 
+function mapStatusLabel(status) {
+  const map = {
+    ok: "Backup OK",
+    warn: "Backup mit Warnungen",
+    error: "Backup fehlgeschlagen",
+    unknown: "Backupstatus unbekannt",
+  };
+  return map[status] || map.unknown;
+}
+
+function renderBackupStatusList(payload) {
+  const statusTarget = document.getElementById("backup-status");
+  const listTarget = document.getElementById("backup-list");
+  if (!statusTarget || !listTarget) return;
+
+  const backups = Array.isArray(payload?.backups) ? payload.backups : [];
+
+  if (!backups.length) {
+    statusTarget.textContent = "Keine Backupdaten vorhanden.";
+    listTarget.replaceChildren();
+    return;
+  }
+
+  const latestTs = backups
+    .map((b) => (b.lastCheckedAt ? Date.parse(b.lastCheckedAt) : 0))
+    .reduce((max, ts) => (ts > max ? ts : max), 0);
+  const latestText = latestTs ? new Date(latestTs).toLocaleString("de-DE") : "keine Daten";
+
+  statusTarget.textContent = `Backups: ${backups.length} • Letztes Update: ${latestText}`;
+
+  listTarget.replaceChildren();
+  backups.forEach((backup) => {
+    const name = backup.backupName || "unbekannt";
+    const label = mapStatusLabel(backup.status);
+    const checkedAt = backup.lastCheckedAt ? new Date(backup.lastCheckedAt).toLocaleString("de-DE") : "keine Daten";
+
+    const li = document.createElement("li");
+    const strong = document.createElement("strong");
+    strong.textContent = name;
+    li.appendChild(strong);
+    li.appendChild(document.createTextNode(`: ${label} • Stand: ${checkedAt}`));
+    listTarget.appendChild(li);
+  });
+}
+
+async function loadBackupStatus() {
+  const target = document.getElementById("backup-status");
+  const listTarget = document.getElementById("backup-list");
+
+  try {
+    const response = await fetch("/backup/names", {
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      const text = await response.text();
+      throw new Error(
+        `Unerwartete Antwort (${contentType || "kein Content-Type"}). ` +
+        `Haeufige Ursache: Landing/Proxy liefert HTML statt /backup/names-JSON. ` +
+        `Vorschau: ${text.slice(0, 80)}`
+      );
+    }
+
+    const payload = await response.json();
+    renderBackupStatusList(payload);
+  } catch (error) {
+    if (target) {
+      target.textContent = `Backupstatus konnte nicht geladen werden (${error instanceof Error ? error.message : String(error)})`;
+    }
+    if (listTarget) {
+      listTarget.replaceChildren();
+    }
+  }
+}
+
 async function loadProfile() {
   try {
     const response = await fetch("/api/me", {
@@ -110,3 +194,4 @@ async function loadProfile() {
 initializeThemeToggle();
 hydrateLinks();
 loadProfile();
+loadBackupStatus();
