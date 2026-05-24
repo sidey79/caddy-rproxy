@@ -110,41 +110,66 @@ function formatTimestamp(value) {
 }
 
 function normalizeBackupStatus(payload, source) {
+  const status = payload?.status || payload?.public?.status || "unknown";
   return {
     source,
-    status: payload?.status || "unknown",
-    label: mapStatusLabel(payload?.status),
-    checkedAt: payload?.checkedAt || null,
-    backupName: payload?.backupName || source,
-    message: payload?.message || null,
+    status,
+    label: mapStatusLabel(status),
+    checkedAt: payload?.checkedAt || payload?.checked_at || payload?.public?.checkedAt || payload?.public?.checked_at || null,
+    backupName: payload?.backupName || payload?.backup_name || source,
+    message: payload?.message || payload?.error || null,
   };
 }
 
 async function fetchBackupStatus(source) {
-  const response = await fetch(`/backup/status?source=${encodeURIComponent(source)}`, {
-    credentials: "same-origin",
-    headers: {
-      Accept: "application/json",
-    },
-    cache: "no-store",
-  });
+  const variants = [
+    `/backup/status?source=${encodeURIComponent(source)}`,
+    `/backup/status?backup_name=${encodeURIComponent(source)}`,
+  ];
 
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+  let lastError = null;
+
+  for (const url of variants) {
+    try {
+      const response = await fetch(url, {
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const text = await response.text();
+        throw new Error(
+          `Unerwartete Antwort (${contentType || "kein Content-Type"}). ` +
+          `Haeufige Ursache: Landing/Proxy liefert HTML statt /backup/status-JSON. ` +
+          `Vorschau: ${text.slice(0, 80)}`
+        );
+      }
+
+      const payload = await response.json();
+      const normalized = normalizeBackupStatus(payload, source);
+
+      // Accept first non-unknown result; otherwise try legacy variant next.
+      if (normalized.status !== "unknown" || url.includes("backup_name=")) {
+        return normalized;
+      }
+    } catch (error) {
+      lastError = error;
+    }
   }
 
-  const contentType = response.headers.get("content-type") || "";
-  if (!contentType.includes("application/json")) {
-    const text = await response.text();
-    throw new Error(
-      `Unerwartete Antwort (${contentType || "kein Content-Type"}). ` +
-      `Haeufige Ursache: Landing/Proxy liefert HTML statt /backup/status-JSON. ` +
-      `Vorschau: ${text.slice(0, 80)}`
-    );
+  if (lastError) {
+    throw lastError;
   }
 
-  const payload = await response.json();
-  return normalizeBackupStatus(payload, source);
+  return normalizeBackupStatus({}, source);
 }
 
 function renderBackupCard(result) {
