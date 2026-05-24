@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import parse_qs, urlparse
+
 
 class Handler(BaseHTTPRequestHandler):
     def _send_json(self, code, payload):
@@ -22,9 +24,18 @@ class Handler(BaseHTTPRequestHandler):
         self._handle()
 
     def _handle(self, head=False):
-        path = self.path
+        parsed = urlparse(self.path)
+        path = parsed.path
+        query = parse_qs(parsed.query)
+
         if path == "/webhook/backup/status-public":
-            payload = {"status": "ok", "backupName": "paperless", "checkedAt": "2026-05-23T00:00:00Z"}
+            source = (query.get("source", ["duplicati"])[0] or "duplicati").lower()
+            payload = {
+                "source": source,
+                "status": "ok",
+                "backupName": source,
+                "checkedAt": "2026-05-23T00:00:00Z",
+            }
             if head:
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
@@ -35,7 +46,11 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/webhook/backup/names":
-            payload = {"count": 1, "backupNames": ["paperless"], "backups": [{"backupName": "paperless", "status": "ok"}]}
+            payload = {
+                "count": 1,
+                "backupNames": ["paperless"],
+                "backups": [{"backupName": "paperless", "status": "ok"}],
+            }
             if head:
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
@@ -72,6 +87,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         return
+
 
 if __name__ == "__main__":
     HTTPServer(("0.0.0.0", 5678), Handler).serve_forever()
