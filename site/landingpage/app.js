@@ -125,6 +125,7 @@ function inferStatus(raw) {
 
 function normalizeBackupStatus(payload, source) {
   const data = Array.isArray(payload?.backups) ? payload.backups[0] || {} : payload || {};
+  const details = data?.details && typeof data.details === "object" ? data.details : {};
 
   const direct =
     data?.status ||
@@ -152,17 +153,26 @@ function normalizeBackupStatus(payload, source) {
     source,
     status,
     label: mapStatusLabel(status),
+    rawLabel: data?.label || null,
     checkedAt:
       data?.checkedAt ||
       data?.checked_at ||
+      data?.lastRunAt ||
+      data?.last_run_at ||
       data?.lastCheckedAt ||
       data?.last_checked_at ||
       data?.public?.checkedAt ||
       data?.public?.checked_at ||
+      details?.checked_at ||
       data?.timestamp ||
       null,
-    backupName: data?.backupName || data?.backup_name || source,
-    message: data?.message || data?.error || null,
+    backupName: data?.backupName || data?.backup_name || details?.backup_name || source,
+    lastSuccess:
+      data?.lastSuccess ||
+      data?.last_success ||
+      details?.last_success ||
+      null,
+    message: data?.message || details?.message || data?.error || null,
   };
 }
 
@@ -232,7 +242,10 @@ function renderBackupCard(result) {
   }
 
   if (detailNode) {
-    detailNode.textContent = `Stand: ${formatTimestamp(result.checkedAt)}`;
+    const backupName = result.backupName || result.source || "-";
+    const lastRun = formatTimestamp(result.checkedAt || result.lastSuccess || null);
+    const message = result.message ? String(result.message) : null;
+    detailNode.textContent = `Backup: ${backupName} | Letzter Lauf: ${lastRun}${message ? ` | ${message}` : ""}`;
   }
 }
 
