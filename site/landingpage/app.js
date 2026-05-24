@@ -96,78 +96,104 @@ function mapStatusLabel(status) {
   return map[status] || map.unknown;
 }
 
-function renderBackupStatusList(payload) {
-  const statusTarget = document.getElementById("backup-status");
-  const listTarget = document.getElementById("backup-list");
-  if (!statusTarget || !listTarget) return;
-
-  const backups = Array.isArray(payload?.backups) ? payload.backups : [];
-
-  if (!backups.length) {
-    statusTarget.textContent = "Keine Backupdaten vorhanden.";
-    listTarget.replaceChildren();
-    return;
+function formatTimestamp(value) {
+  if (!value) {
+    return "keine Daten";
   }
 
-  const latestTs = backups
-    .map((b) => (b.lastCheckedAt ? Date.parse(b.lastCheckedAt) : 0))
-    .reduce((max, ts) => (ts > max ? ts : max), 0);
-  const latestText = latestTs ? new Date(latestTs).toLocaleString("de-DE") : "keine Daten";
+  const ts = Date.parse(value);
+  if (Number.isNaN(ts)) {
+    return "keine Daten";
+  }
 
-  statusTarget.textContent = `Backups: ${backups.length} • Letztes Update: ${latestText}`;
+  return new Date(ts).toLocaleString("de-DE");
+}
 
-  listTarget.replaceChildren();
-  backups.forEach((backup) => {
-    const name = backup.backupName || "unbekannt";
-    const label = mapStatusLabel(backup.status);
-    const checkedAt = backup.lastCheckedAt ? new Date(backup.lastCheckedAt).toLocaleString("de-DE") : "keine Daten";
+function normalizeBackupStatus(payload, source) {
+  return {
+    source,
+    status: payload?.status || "unknown",
+    label: mapStatusLabel(payload?.status),
+    checkedAt: payload?.checkedAt || null,
+    backupName: payload?.backupName || source,
+    message: payload?.message || null,
+  };
+}
 
-    const li = document.createElement("li");
-    const strong = document.createElement("strong");
-    strong.textContent = name;
-    li.appendChild(strong);
-    li.appendChild(document.createTextNode(`: ${label} • Stand: ${checkedAt}`));
-    listTarget.appendChild(li);
+async function fetchBackupStatus(source) {
+  const response = await fetch(`/backup/status?source=${encodeURIComponent(source)}`, {
+    credentials: "same-origin",
+    headers: {
+      Accept: "application/json",
+    },
+    cache: "no-store",
   });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    const text = await response.text();
+    throw new Error(
+      `Unerwartete Antwort (${contentType || "kein Content-Type"}). ` +
+      `Haeufige Ursache: Landing/Proxy liefert HTML statt /backup/status-JSON. ` +
+      `Vorschau: ${text.slice(0, 80)}`
+    );
+  }
+
+  const payload = await response.json();
+  return normalizeBackupStatus(payload, source);
+}
+
+function renderBackupCard(result) {
+  const card = document.getElementById(`backup-card-${result.source}`);
+  if (!card) return;
+
+  const statusNode = card.querySelector("[data-backup-status]");
+  const detailNode = card.querySelector("[data-backup-detail]");
+
+  card.classList.remove("backup-state-ok", "backup-state-warn", "backup-state-error", "backup-state-unknown");
+  card.classList.add(`backup-state-${result.status}`);
+
+  if (statusNode) {
+    statusNode.textContent = result.label;
+  }
+
+  if (detailNode) {
+    detailNode.textContent = `Stand: ${formatTimestamp(result.checkedAt)}`;
+  }
+}
+
+function renderBackupFailure(source, error) {
+  renderBackupCard({
+    source,
+    status: "unknown",
+    label: "Backupstatus unbekannt",
+    checkedAt: null,
+  });
+
+  const card = document.getElementById(`backup-card-${source}`);
+  const detailNode = card ? card.querySelector("[data-backup-detail]") : null;
+  if (detailNode) {
+    detailNode.textContent = `Fehler: ${error instanceof Error ? error.message : String(error)}`;
+  }
 }
 
 async function loadBackupStatus() {
-  const target = document.getElementById("backup-status");
-  const listTarget = document.getElementById("backup-list");
+  const sources = ["duplicati", "restic"];
 
-  try {
-    const response = await fetch("/backup/names", {
-      credentials: "same-origin",
-      headers: {
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-      const text = await response.text();
-      throw new Error(
-        `Unerwartete Antwort (${contentType || "kein Content-Type"}). ` +
-        `Haeufige Ursache: Landing/Proxy liefert HTML statt /backup/names-JSON. ` +
-        `Vorschau: ${text.slice(0, 80)}`
-      );
-    }
-
-    const payload = await response.json();
-    renderBackupStatusList(payload);
-  } catch (error) {
-    if (target) {
-      target.textContent = `Backupstatus konnte nicht geladen werden (${error instanceof Error ? error.message : String(error)})`;
-    }
-    if (listTarget) {
-      listTarget.replaceChildren();
-    }
-  }
+  await Promise.all(
+    sources.map(async (source) => {
+      try {
+        const result = await fetchBackupStatus(source);
+        renderBackupCard(result);
+      } catch (error) {
+        renderBackupFailure(source, error);
+      }
+    })
+  );
 }
 
 async function loadProfile() {

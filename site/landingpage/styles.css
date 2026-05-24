@@ -319,3 +319,50 @@ h1 {
     max-width: none;
   }
 }
+
+.backup-card {
+  min-height: 180px;
+}
+
+.backup-status-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: rgba(96, 113, 123, 0.16);
+  color: var(--text);
+}
+
+.backup-state-ok .backup-status-pill {
+  background: rgba(26, 157, 110, 0.2);
+  color: #0e6f50;
+}
+
+.backup-state-warn .backup-status-pill {
+  background: rgba(232, 164, 40, 0.26);
+  color: #8b5606;
+}
+
+.backup-state-error .backup-status-pill {
+  background: rgba(210, 71, 71, 0.24);
+  color: #8e1f1f;
+}
+
+:root[data-theme="dark"] .backup-state-ok .backup-status-pill {
+  background: rgba(77, 216, 168, 0.24);
+  color: #9af2d0;
+}
+
+:root[data-theme="dark"] .backup-state-warn .backup-status-pill {
+  background: rgba(247, 190, 92, 0.24);
+  color: #ffd79a;
+}
+
+:root[data-theme="dark"] .backup-state-error .backup-status-pill {
+  background: rgba(246, 112, 112, 0.24);
+  color: #ffc0c0;
+}
