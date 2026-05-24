@@ -45,11 +45,6 @@ services:
     user: "0:0"
 
 networks:
-  default:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.31.255.0/30
   backend_net:
     external: true
     name: network_backend_net
