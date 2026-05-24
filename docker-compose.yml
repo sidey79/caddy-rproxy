@@ -24,6 +24,7 @@ services:
       TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
     networks:
       backend_net:
+        ipv4_address: 172.28.19.8
       homelan:
         ipv4_address: 10.2.11.19
         ipv6_address: fd00:10:2:11::19
@@ -45,6 +46,11 @@ services:
     user: "0:0"
 
 networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.255.0/30
   backend_net:
     external: true
     name: network_backend_net
