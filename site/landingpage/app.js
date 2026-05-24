@@ -245,7 +245,9 @@ function renderBackupCard(result) {
     const backupName = result.backupName || result.source || "-";
     const lastRun = formatTimestamp(result.checkedAt || result.lastSuccess || null);
     const message = result.message ? String(result.message) : null;
-    detailNode.textContent = `Backup: ${backupName} | Letzter Lauf: ${lastRun}${message ? ` | ${message}` : ""}`;
+    const compactMessage = message && message.length > 48 ? `${message.slice(0, 45)}...` : message;
+    const showMessage = compactMessage && result.status !== "ok";
+    detailNode.textContent = `Backup: ${backupName} | Lauf: ${lastRun}${showMessage ? ` | ${compactMessage}` : ""}`;
   }
 }
 
