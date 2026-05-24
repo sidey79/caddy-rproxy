@@ -109,15 +109,60 @@ function formatTimestamp(value) {
   return new Date(ts).toLocaleString("de-DE");
 }
 
+function inferStatus(raw) {
+  const normalized = String(raw || "").toLowerCase();
+  if (["ok", "success", "successful", "completed", "true"].includes(normalized)) return "ok";
+  if (normalized.includes("warn")) return "warn";
+  if (
+    ["error", "failed", "fail", "fatal", "false"].includes(normalized) ||
+    normalized.includes("error") ||
+    normalized.includes("fail")
+  ) {
+    return "error";
+  }
+  return null;
+}
+
 function normalizeBackupStatus(payload, source) {
-  const status = payload?.status || payload?.public?.status || "unknown";
+  const data = Array.isArray(payload?.backups) ? payload.backups[0] || {} : payload || {};
+
+  const direct =
+    data?.status ||
+    data?.public?.status ||
+    data?.rawResult ||
+    data?.result ||
+    data?.outcome ||
+    null;
+
+  const byLabel = inferStatus(data?.label);
+  const byDirect = inferStatus(direct);
+
+  let status = byDirect || byLabel || "unknown";
+
+  const warnings = Number(data?.warnings ?? data?.warning_count ?? data?.warningCount ?? 0);
+  const errors = Number(data?.errors ?? data?.error_count ?? data?.errorCount ?? 0);
+  const exitCode = Number(data?.exitCode ?? data?.exit_code ?? NaN);
+
+  if (status === "unknown") {
+    if (errors > 0 || Number.isFinite(exitCode) && exitCode > 0) status = "error";
+    else if (warnings > 0) status = "warn";
+  }
+
   return {
     source,
     status,
     label: mapStatusLabel(status),
-    checkedAt: payload?.checkedAt || payload?.checked_at || payload?.public?.checkedAt || payload?.public?.checked_at || null,
-    backupName: payload?.backupName || payload?.backup_name || source,
-    message: payload?.message || payload?.error || null,
+    checkedAt:
+      data?.checkedAt ||
+      data?.checked_at ||
+      data?.lastCheckedAt ||
+      data?.last_checked_at ||
+      data?.public?.checkedAt ||
+      data?.public?.checked_at ||
+      data?.timestamp ||
+      null,
+    backupName: data?.backupName || data?.backup_name || source,
+    message: data?.message || data?.error || null,
   };
 }
 
