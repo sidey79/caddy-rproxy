@@ -238,7 +238,7 @@ function renderBackupCard(result) {
   card.classList.add(`backup-state-${result.status}`);
 
   if (statusNode) {
-    statusNode.textContent = result.rawLabel || result.label;
+    statusNode.textContent = result.label;
   }
 
   if (detailNode) {
