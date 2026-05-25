@@ -128,10 +128,37 @@
 
       <section class="section note">
         <div class="section-head">
-          <h2>Hinweis</h2>
+          <h2>Backup-Status</h2>
+          <p>Beide Quellen werden separat abgefragt und als eigene Kachel dargestellt.</p>
         </div>
-        <p id="backup-status">Backup-Status wird geladen ...</p>
-        <ul id="backup-list"></ul>
+        <div class="card-grid backup-grid" aria-live="polite">
+          <article class="service-card service-card-sky backup-card backup-state-unknown" id="backup-card-duplicati">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <rect x="11" y="18" width="42" height="30" rx="7"></rect>
+                <path d="M20 28h24M20 36h16"></path>
+                <path d="M32 18v-6"></path>
+              </svg>
+            </span>
+            <span class="service-kicker">Backup Quelle</span>
+            <strong>Duplicati</strong>
+            <span class="backup-status-pill" data-backup-status>Backupstatus unbekannt</span>
+            <span data-backup-detail>Stand: keine Daten</span>
+          </article>
+          <article class="service-card service-card-mint backup-card backup-state-unknown" id="backup-card-restic">
+            <span class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img">
+                <path d="M18 26h28l-4 22H14z"></path>
+                <path d="M22 22a10 10 0 0 1 20 0"></path>
+                <circle cx="30" cy="36" r="2"></circle>
+              </svg>
+            </span>
+            <span class="service-kicker">Backup Quelle</span>
+            <strong>Restic</strong>
+            <span class="backup-status-pill" data-backup-status>Backupstatus unbekannt</span>
+            <span data-backup-detail>Stand: keine Daten</span>
+          </article>
+        </div>
         <p>
           Diese Seite blendet nur Links ein oder aus. Die Zielsysteme muessen weiterhin selbst ueber
           Authelia, mTLS oder eigene Anmeldung geschuetzt bleiben.

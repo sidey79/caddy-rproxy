@@ -67,7 +67,8 @@
 }
 (authelia_forward_auth) {
 	forward_auth authelia:9091 {
-		uri /api/authz/forward-auth
+		uri /api/authz/forward-auth?
+		header_up X-Forwarded-Uri {path}
 		copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
 	}
 }
