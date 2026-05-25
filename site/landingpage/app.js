@@ -149,6 +149,16 @@ function normalizeBackupStatus(payload, source) {
     else if (warnings > 0) status = "warn";
   }
 
+  const jobs = Array.isArray(data?.jobs)
+    ? data.jobs.map((job) => ({
+        backupName: job?.backupName || job?.backup_name || null,
+        status: inferStatus(job?.status) || inferStatus(job?.label) || "unknown",
+        checkedAt: job?.checkedAt || job?.checked_at || null,
+        lastSuccess: job?.lastSuccess || job?.last_success || null,
+        message: job?.message || null,
+      })).filter((job) => job.backupName)
+    : [];
+
   return {
     source,
     status,
@@ -173,6 +183,7 @@ function normalizeBackupStatus(payload, source) {
       details?.last_success ||
       null,
     message: data?.message || details?.message || data?.error || null,
+    jobs,
   };
 }
 
@@ -242,12 +253,20 @@ function renderBackupCard(result) {
   }
 
   if (detailNode) {
-    const backupName = result.backupName || result.source || "-";
-    const lastRun = formatTimestamp(result.checkedAt || result.lastSuccess || null);
-    const message = result.message ? String(result.message) : null;
-    const compactMessage = message && message.length > 48 ? `${message.slice(0, 45)}...` : message;
-    const showMessage = compactMessage && result.status !== "ok";
-    detailNode.textContent = `Backup: ${backupName} | Lauf: ${lastRun}${showMessage ? ` | ${compactMessage}` : ""}`;
+    if (Array.isArray(result.jobs) && result.jobs.length > 0) {
+      const compact = result.jobs.map((job) => {
+        const runAt = formatTimestamp(job.checkedAt || job.lastSuccess || null);
+        return `${job.backupName}: ${mapStatusLabel(job.status)} (${runAt})`;
+      });
+      detailNode.textContent = compact.join(" | ");
+    } else {
+      const backupName = result.backupName || result.source || "-";
+      const lastRun = formatTimestamp(result.checkedAt || result.lastSuccess || null);
+      const message = result.message ? String(result.message) : null;
+      const compactMessage = message && message.length > 48 ? `${message.slice(0, 45)}...` : message;
+      const showMessage = compactMessage && result.status !== "ok";
+      detailNode.textContent = `Backup: ${backupName} | Lauf: ${lastRun}${showMessage ? ` | ${compactMessage}` : ""}`;
+    }
   }
 }
 
