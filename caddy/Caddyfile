@@ -86,6 +86,7 @@
 	transport http {
 		versions 1.1
 		keepalive off
+		max_conns_per_host 20
 		tls_server_name zeus.fritz.box
 		tls_trust_pool file {
 			pem_file /etc/ssl/ca/certs/blausee_ca.crt
