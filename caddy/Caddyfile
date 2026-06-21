@@ -108,20 +108,17 @@
 		import fhem_transport
 	}
 }
-(fhem_upstream_cached) {
-	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
-		header_down Cache-Control "public, max-age=2592000"
-		import fhem_client_cert_headers
-		import fhem_transport
-	}
+(fhem_static_long_cache) {
+	header Cache-Control "public, max-age=2592000"
+	root * /srv/fhem-www
+	uri strip_prefix /fhem
+	file_server
 }
-(fhem_upstream_with_auth_header_cached) {
-	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
-		header_up Authorization {$FHEM_BASIC_AUTH_HEADER}
-		header_down Cache-Control "public, max-age=2592000"
-		import fhem_client_cert_headers
-		import fhem_transport
-	}
+(fhem_static_short_cache) {
+	header Cache-Control "public, max-age=3600"
+	root * /srv/fhem-www
+	uri strip_prefix /fhem
+	file_server
 }
 (logging_info) {
 	log {
@@ -157,22 +154,24 @@ fhem.{$CADDY_SUBDOMAIN} {
 	encode gzip
 
 	@fhem_images path /fhem/images/*
+	@fhem_static_short_cache path /fhem/codemirror/* /fhem/pgm2/*
 	route {
 		handle @fhem_images {
 			handle @missing_mTLS_cert {
 				import authelia_forward_auth
-				handle @fhem_basic_auth_secret_missing {
-					import fhem_upstream_cached
-				}
-				handle {
-					import fhem_upstream_with_auth_header_cached
-				}
-			}
-			handle @fhem_basic_auth_secret_missing {
-				import fhem_upstream_cached
+				import fhem_static_long_cache
 			}
 			handle {
-				import fhem_upstream_with_auth_header_cached
+				import fhem_static_long_cache
+			}
+		}
+		handle @fhem_static_short_cache {
+			handle @missing_mTLS_cert {
+				import authelia_forward_auth
+				import fhem_static_short_cache
+			}
+			handle {
+				import fhem_static_short_cache
 			}
 		}
 		handle @missing_mTLS_cert {

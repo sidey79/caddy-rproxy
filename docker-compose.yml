@@ -9,6 +9,7 @@ services:
     volumes:
       - ./caddy:/etc/caddy
       - ./site:/srv
+      - /opt/docker/fhem/app/www:/srv/fhem-www:ro
       - /opt/docker/caddy/data:/data
       - /opt/docker/caddy/caddy_config:/config
       - /opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/blausee_ca.crt:ro
@@ -30,6 +31,8 @@ services:
         ipv6_address: fd00:10:2:11::19
     restart: unless-stopped
     user: 5100:5100
+    group_add:
+      - "1003"
     cap_add:
       - NET_ADMIN
 
