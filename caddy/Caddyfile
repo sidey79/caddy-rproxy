@@ -114,12 +114,6 @@
 	uri strip_prefix /fhem
 	file_server
 }
-(fhem_static_short_cache) {
-	header Cache-Control "public, max-age=3600"
-	root * /srv/fhem-www
-	uri strip_prefix /fhem
-	file_server
-}
 (logging_info) {
 	log {
 		level INFO
@@ -154,7 +148,6 @@ fhem.{$CADDY_SUBDOMAIN} {
 	encode gzip
 
 	@fhem_images path /fhem/images/*
-	@fhem_static_short_cache path /fhem/codemirror/* /fhem/pgm2/*
 	route {
 		handle @fhem_images {
 			handle @missing_mTLS_cert {
@@ -163,15 +156,6 @@ fhem.{$CADDY_SUBDOMAIN} {
 			}
 			handle {
 				import fhem_static_long_cache
-			}
-		}
-		handle @fhem_static_short_cache {
-			handle @missing_mTLS_cert {
-				import authelia_forward_auth
-				import fhem_static_short_cache
-			}
-			handle {
-				import fhem_static_short_cache
 			}
 		}
 		handle @missing_mTLS_cert {
