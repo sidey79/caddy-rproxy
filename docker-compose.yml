@@ -31,10 +31,10 @@ services:
         ipv6_address: fd00:10:2:11::19
     restart: unless-stopped
     user: 5100:5100
-    group_add:
-      - "1003"
     cap_add:
       - NET_ADMIN
+    group_add:
+      - "1003"
 
   fetch-workflow-assets:
     image: curlimages/curl:8.20.0@sha256:b3f1fb2a51d923260350d21b8654bbc607164a987e2f7c84a0ac199a67df812a
