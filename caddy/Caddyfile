@@ -167,8 +167,13 @@ fhem.{$CADDY_SUBDOMAIN} {
 	route {
 		handle @fhem_images {
 			handle @missing_mTLS_cert {
-				import authelia_forward_auth
-				import fhem_static_long_cache
+				# Keep auth before the static rewrite so Authelia sees the original FHEM URL.
+				route {
+					import authelia_forward_auth
+					handle {
+						import fhem_static_long_cache
+					}
+				}
 			}
 			handle {
 				import fhem_static_long_cache
