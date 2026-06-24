@@ -109,19 +109,14 @@
 	}
 }
 (fhem_static_long_cache) {
-	root * /srv/fhem-www
-	uri strip_prefix /fhem
-	@fhem_static_existing file {path}
-	handle @fhem_static_existing {
-		header Cache-Control "public, max-age=2592000"
-		file_server
-	}
-	handle {
-		rewrite * /__fhem_backend/fhem{uri}
-		handle_path /__fhem_backend/* {
-			reverse_proxy https://fhem-fhem-1.network_backend_net:8088 {
-				import fhem_transport
-			}
+	header Cache-Control "public, max-age=2592000"
+	file_server
+}
+(fhem_static_backend_fallback) {
+	rewrite * /__fhem_backend{uri}
+	handle_path /__fhem_backend/* {
+		reverse_proxy https://fhem-fhem-1.network_backend_net:8088 {
+			import fhem_transport
 		}
 	}
 }
@@ -195,13 +190,29 @@ fhem.{$CADDY_SUBDOMAIN} {
 				# Keep auth before the static rewrite so Authelia sees the original FHEM URL.
 				route {
 					import authelia_forward_auth
-					handle {
-						import fhem_static_long_cache
+					route {
+						root * /srv/fhem-www
+						uri strip_prefix /fhem
+						@fhem_static_existing_mtls file {path}
+						handle @fhem_static_existing_mtls {
+							import fhem_static_long_cache
+						}
+						handle {
+							import fhem_static_backend_fallback
+						}
 					}
 				}
 			}
-			handle {
-				import fhem_static_long_cache
+			route {
+				root * /srv/fhem-www
+				uri strip_prefix /fhem
+				@fhem_static_existing_images file {path}
+				handle @fhem_static_existing_images {
+					import fhem_static_long_cache
+				}
+				handle {
+					import fhem_static_backend_fallback
+				}
 			}
 		}
 		handle @fhem_codemirror {

@@ -50,7 +50,7 @@ require_pattern "handle @landingBackupNames {" "Missing landingBackupNames handl
 
 # FHEM image auth must keep the original URL through Authelia before strip_prefix runs.
 require_pattern "Keep auth before the static rewrite so Authelia sees the original FHEM URL." "Missing FHEM image auth ordering guard"
-require_pattern "rewrite * /__fhem_backend/fhem{uri}" "Missing FHEM image backend fallback"
+require_pattern "rewrite * /__fhem_backend{uri}" "Missing FHEM image backend fallback"
 require_pattern "handle_path /__fhem_backend/* {" "Missing FHEM image backend proxy handler"
 
 # Workflow host webhook protections must remain explicit.
