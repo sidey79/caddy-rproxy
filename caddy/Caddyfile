@@ -120,23 +120,16 @@
 		try_files {path} /__fhem_backend/fhem{uri}
 		handle_path /__fhem_backend/* {
 			reverse_proxy https://fhem-fhem-1.network_backend_net:8088 {
-				transport http {
-					versions 1.1
-					keepalive off
-					tls_server_name zeus.fritz.box
-					tls_trust_pool file {
-						pem_file /etc/ssl/ca/certs/blausee_ca.crt
-					}
-				}
+				import fhem_transport
 			}
 		}
 	}
 }
 (fhem_upstream_codemirror_cached) {
 	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
-		header_down -Cache-Control
 		@fhem_codemirror_success status 200 206
 		handle_response @fhem_codemirror_success {
+			header -Cache-Control
 			header Cache-Control "public, max-age=3600"
 			copy_response_headers
 			copy_response
@@ -148,9 +141,9 @@
 (fhem_upstream_with_auth_header_codemirror_cached) {
 	reverse_proxy https://fhem-fhem-1.network_backend_net:8083 {
 		header_up Authorization {$FHEM_BASIC_AUTH_HEADER}
-		header_down -Cache-Control
 		@fhem_codemirror_success status 200 206
 		handle_response @fhem_codemirror_success {
+			header -Cache-Control
 			header Cache-Control "public, max-age=3600"
 			copy_response_headers
 			copy_response
