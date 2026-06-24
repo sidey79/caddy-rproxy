@@ -113,7 +113,7 @@
 	file_server
 }
 (fhem_static_backend_fallback) {
-	rewrite * /__fhem_backend{uri}
+	rewrite * /__fhem_backend/fhem{uri}
 	handle_path /__fhem_backend/* {
 		reverse_proxy https://fhem-fhem-1.network_backend_net:8088 {
 			import fhem_transport
@@ -350,12 +350,7 @@ ui.{$CADDY_SUBDOMAIN} {
 	rewrite /images/* /fhem{uri}
 
 	reverse_proxy /fhem/images/* https://fhem-fhem-1.network_backend_net:8088 {
-		transport http {
-			tls_server_name zeus.fritz.box
-			tls_trust_pool file {
-				pem_file /etc/ssl/ca/certs/blausee_ca.crt
-			}
-		}
+		import fhem_transport
 	}
 	file_server
 	#import logging_info
