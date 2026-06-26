@@ -9,6 +9,7 @@ services:
     volumes:
       - ./caddy:/etc/caddy
       - ./site:/srv
+      - /opt/docker/fhem/app/www:/srv/fhem-www:ro
       - /opt/docker/caddy/data:/data
       - /opt/docker/caddy/caddy_config:/config
       - /opt/docker/rootca/root-ca.cert.pem:/etc/ssl/ca/certs/blausee_ca.crt:ro
@@ -32,6 +33,8 @@ services:
     user: 5100:5100
     cap_add:
       - NET_ADMIN
+    group_add:
+      - "1003"
 
   fetch-workflow-assets:
     image: curlimages/curl:8.21.0@sha256:7c12af72ceb38b7432ab85e1a265cff6ae58e06f95539d539b654f2cfa64bb13

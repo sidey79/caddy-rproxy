@@ -52,10 +52,33 @@ assert_no_upstream_header() {
   echo "OK: no upstream proxy header for $host$path"
 }
 
+wait_for_code() {
+  local method="$1" host="$2" path="$3" auth="$4" want="$5"
+  local attempts=30
+  local delay=1
+  local got=""
+
+  for _ in $(seq 1 "$attempts"); do
+    got="$(req_code "$method" "$host" "$path" "$auth")"
+    if [[ "$got" == "$want" ]]; then
+      echo "OK: ready $method $host$path -> $got"
+      return 0
+    fi
+    if [[ "$got" != "502" && "$got" != "503" && "$got" != "504" ]]; then
+      break
+    fi
+    sleep "$delay"
+  done
+
+  echo "FAIL: $method $host$path ready check (got=$got want=$want)" >&2
+  exit 1
+}
+
 echo "Starting isolated E2E stack..."
 docker compose -f "$COMPOSE_FILE" up -d --wait
 
 # landing.* protected endpoints
+wait_for_code GET landing.test /backup/status none 401
 assert_eq "$(req_code GET landing.test /backup/status none)" "401" "landing /backup/status requires auth"
 assert_eq "$(req_code GET landing.test /backup/status auth)" "200" "landing /backup/status works with auth"
 assert_eq "$(req_code GET landing.test /backup/names none)" "401" "landing /backup/names requires auth"

@@ -48,6 +48,11 @@ require_pattern "rewrite * /webhook/backup/names" "Missing rewrite for /backup/n
 require_pattern "handle @landingBackupStatus {" "Missing landingBackupStatus handle"
 require_pattern "handle @landingBackupNames {" "Missing landingBackupNames handle"
 
+# FHEM image auth must keep the original URL through Authelia before strip_prefix runs.
+require_pattern "Keep auth before the static rewrite so Authelia sees the original FHEM URL." "Missing FHEM image auth ordering guard"
+require_pattern "rewrite * /__fhem_backend/fhem{uri}" "Missing FHEM image backend fallback"
+require_pattern "handle_path /__fhem_backend/* {" "Missing FHEM image backend proxy handler"
+
 # Workflow host webhook protections must remain explicit.
 require_pattern 'header X-Telegram-Bot-Api-Secret-Token {$TELEGRAM_WEBHOOK_SECRET}' 'Missing Telegram secret header matcher'
 require_pattern "path /webhook/scanservjs/telegram/reissue /webhook-test/scanservjs/telegram/reissue" "Missing Telegram webhook path matcher"
