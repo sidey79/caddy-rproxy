@@ -69,5 +69,6 @@ require_pattern "path /rest/oauth2-credential*" "Missing n8n OAuth callback path
 require_pattern "handle @oauth2Credential {" "Missing n8n OAuth callback handler"
 require_pattern "header_up X-Forwarded-Host {host}" "Missing n8n forwarded host header"
 require_pattern "header_up X-Forwarded-Proto {scheme}" "Missing n8n forwarded protocol header"
+require_pattern 'respond "workflow fallback" 404' "Missing workflow fallback for unmatched requests"
 
 echo "Auth endpoint policy checks passed: $CADDYFILE"

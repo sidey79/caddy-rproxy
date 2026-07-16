@@ -475,6 +475,9 @@ workflow.{$CADDY_SUBDOMAIN} {
 		handle @workflowMtls {
 			import n8n_upstream
 		}
+		handle {
+			respond "workflow fallback" 404
+		}
 	}
 	import logging_info
 }
