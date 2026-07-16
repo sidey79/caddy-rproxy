@@ -47,6 +47,27 @@ keeps n8n OAuth2 callback URLs such as `https://workflow.sidey.blausee.eu/rest/o
 reachable by external OAuth providers without exposing the generic n8n editor or REST API to clients
 without a certificate.
 
+### n8n OAuth behind Caddy
+
+The n8n stack is maintained separately from this reverse proxy. Configure that stack with the public
+workflow origin so n8n generates public OAuth redirect URLs instead of `http://localhost:5678`:
+
+```yaml
+environment:
+  WEBHOOK_URL: https://workflow.${CADDY_SUBDOMAIN}/
+  N8N_PROXY_HOPS: "1"
+```
+
+Caddy explicitly forwards `X-Forwarded-Host` and `X-Forwarded-Proto` to n8n. Register the exact URL
+shown by the n8n credential in Google Cloud. With the standard n8n endpoint it is:
+
+```text
+https://workflow.<CADDY_SUBDOMAIN>/rest/oauth2-credential/callback
+```
+
+The `http://localhost:5678/rest/oauth2-credential/callback` variant is only valid when n8n is running
+locally on the same machine as the browser.
+
 ## Landing Page
 
 `landing.{$CADDY_SUBDOMAIN}` is protected by Authelia and serves static files from
