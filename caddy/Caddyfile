@@ -1,6 +1,11 @@
 {
 	acme_ca https://acme.zerossl.com/v2/DV90
 	email sven@blausee.eu
+	# Client certificate authentication is not supported over HTTP/3. All HTTPS
+	# sites share this listener, so keep it on HTTP/1.1 and HTTP/2 for FHEM mTLS.
+	servers :443 {
+		protocols h1 h2
+	}
 	pki {
 		ca blausee_ca {
 			root {

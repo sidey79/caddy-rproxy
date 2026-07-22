@@ -31,6 +31,11 @@ When a valid client certificate is present, Caddy also forwards these headers to
 - `X-Client-Cert-Subject`
 - `X-Client-Cert-Fingerprint`
 
+HTTP/3 is disabled on Caddy's shared HTTPS listener because client-certificate authentication is
+not supported over HTTP/3. Since Caddy configures protocols per listener rather than per virtual
+host, all HTTPS sites use HTTP/1.1 or HTTP/2 so the browser keeps presenting the FHEM client
+certificate on subsequent requests.
+
 The route uses `mTLS_optional`. Without a client certificate, the workflow host only serves the
 local workflow asset store from `/assets/*`, exposes `GET/HEAD /api/me` behind Authelia without
 requiring a client certificate, protects the browser UI for `/webhook/github-pr-dashboard` with
