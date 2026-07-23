@@ -49,6 +49,8 @@ require_pattern "handle @landingBackupStatus {" "Missing landingBackupStatus han
 require_pattern "handle @landingBackupNames {" "Missing landingBackupNames handle"
 
 # FHEM image auth must keep the original URL through Authelia before strip_prefix runs.
+require_pattern "servers :443 {" "Missing HTTPS server configuration required for FHEM mTLS"
+require_pattern "protocols h1 h2" "HTTP/3 must be disabled because FHEM uses client certificate authentication"
 require_pattern "Keep auth before the static rewrite so Authelia sees the original FHEM URL." "Missing FHEM image auth ordering guard"
 require_pattern "rewrite * /__fhem_backend/fhem{uri}" "Missing FHEM image backend fallback"
 require_pattern "handle_path /__fhem_backend/* {" "Missing FHEM image backend proxy handler"
