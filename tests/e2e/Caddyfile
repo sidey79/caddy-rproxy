@@ -11,7 +11,10 @@
 }
 
 (n8n_upstream) {
-  reverse_proxy http://n8n-mock:5678
+  reverse_proxy http://n8n-mock:5678 {
+    header_up X-Forwarded-Host {host}
+    header_up X-Forwarded-Proto {scheme}
+  }
 }
 
 http://landing.test {

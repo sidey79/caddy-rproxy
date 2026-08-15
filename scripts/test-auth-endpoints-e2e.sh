@@ -12,7 +12,12 @@ trap cleanup EXIT
 
 req_code() {
   local method="$1" host="$2" path="$3" auth="$4" extra_header="${5:-}"
-  local -a args=( -sS -o /dev/null -w "%{http_code}" -X "$method" -H "Host: $host" )
+  local -a args=( -sS -o /dev/null -w "%{http_code}" -H "Host: $host" )
+  if [[ "$method" == "HEAD" ]]; then
+    args+=( --head )
+  else
+    args+=( -X "$method" )
+  fi
   if [[ "$auth" == "auth" ]]; then
     args+=( -H "X-Test-Auth: allow" )
   fi
@@ -32,6 +37,15 @@ req_header() {
     args+=( -H "$extra_header" )
   fi
   curl "${args[@]}" "$BASE_URL$path" | awk -v h="$header_name" 'BEGIN{IGNORECASE=1} $0 ~ "^"h":" {print; found=1} END{if(!found) exit 1}'
+}
+
+req_body() {
+  local method="$1" host="$2" path="$3" auth="$4"
+  local -a args=( -sS -X "$method" -H "Host: $host" )
+  if [[ "$auth" == "auth" ]]; then
+    args+=( -H "X-Test-Auth: allow" )
+  fi
+  curl "${args[@]}" "$BASE_URL$path"
 }
 
 assert_eq() {
@@ -93,6 +107,19 @@ assert_no_upstream_header GET landing.test /backup/rest/workflows auth
 # workflow.* protected webhook path
 assert_eq "$(req_code POST workflow.test /webhook/protected none)" "401" "workflow protected webhook requires auth without mTLS/exception"
 assert_eq "$(req_code POST workflow.test /webhook/protected auth)" "200" "workflow protected webhook works with auth"
+
+# The exact n8n OAuth callback is public, preserves provider state, and forwards its public origin.
+oauth_response="$(req_body GET workflow.test '/rest/oauth2-credential/callback?code=test-code&state=test-state' none)"
+assert_eq "$(printf '%s' "$oauth_response" | jq -r .path)" "/rest/oauth2-credential/callback" "OAuth callback reaches n8n"
+assert_eq "$(printf '%s' "$oauth_response" | jq -r .query)" "code=test-code&state=test-state" "OAuth callback preserves query parameters"
+assert_eq "$(printf '%s' "$oauth_response" | jq -r .forwardedHost)" "workflow.test" "OAuth callback forwards the public host"
+assert_eq "$(printf '%s' "$oauth_response" | jq -r .forwardedProto)" "http" "OAuth callback forwards the original protocol"
+assert_eq "$(req_code HEAD workflow.test /rest/oauth2-credential/callback none)" "200" "OAuth callback supports HEAD"
+assert_eq "$(req_code OPTIONS workflow.test /rest/oauth2-credential/callback none)" "200" "OAuth callback supports OPTIONS"
+assert_eq "$(req_code POST workflow.test /rest/oauth2-credential/callback none)" "404" "OAuth callback rejects POST"
+assert_no_upstream_header POST workflow.test /rest/oauth2-credential/callback none
+assert_eq "$(req_code GET workflow.test /rest/workflows none)" "404" "unrelated n8n REST endpoints stay private"
+assert_no_upstream_header GET workflow.test /rest/workflows none
 
 # Explicit Telegram exception (no auth but header secret)
 assert_eq "$(req_code POST workflow.test /webhook/scanservjs/telegram/reissue none "X-Telegram-Bot-Api-Secret-Token: test-telegram-secret")" "200" "telegram exception works without auth when secret header matches"

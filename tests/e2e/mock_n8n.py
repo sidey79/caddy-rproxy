@@ -23,6 +23,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         self._handle()
 
+    def do_OPTIONS(self):
+        self._handle()
+
     def _handle(self, head=False):
         parsed = urlparse(self.path)
         path = parsed.path
@@ -73,7 +76,14 @@ class Handler(BaseHTTPRequestHandler):
 
         # Generic webhook sink for protected workflow endpoints.
         if path.startswith("/webhook/") or path.startswith("/webhook-test/") or path.startswith("/rest/oauth2-credential"):
-            payload = {"ok": True, "path": path, "method": self.command}
+            payload = {
+                "ok": True,
+                "path": path,
+                "query": parsed.query,
+                "method": self.command,
+                "forwardedHost": self.headers.get("X-Forwarded-Host"),
+                "forwardedProto": self.headers.get("X-Forwarded-Proto"),
+            }
             if head:
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
