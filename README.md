@@ -36,8 +36,10 @@ not supported over HTTP/3. Since Caddy configures protocols per listener rather 
 host, all HTTPS sites use HTTP/1.1 or HTTP/2 so the browser keeps presenting the FHEM client
 certificate on subsequent requests.
 
-The route uses `mTLS_optional`. Without a client certificate, the workflow host only serves the
-local workflow asset store from `/assets/*`, exposes `GET/HEAD /api/me` behind Authelia without
+The route uses `mTLS_optional`. Without a client certificate, the workflow host serves matching
+files from the local workflow asset store under `/assets/*`; missing assets are not proxied.
+With a client certificate, missing `/assets/*` files are forwarded to n8n so that the n8n editor's versioned JavaScript and CSS assets work correctly. The host also exposes
+`GET/HEAD /api/me` behind Authelia without
 requiring a client certificate, protects the browser UI for `/webhook/github-pr-dashboard` with
 Authelia, and forwards the `POST` webhook request to n8n. With a client certificate, all remaining
 `workflow.*` paths are forwarded to n8n after the explicit path exceptions have been evaluated. If a

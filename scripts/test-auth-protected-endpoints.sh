@@ -31,6 +31,11 @@ require_pattern() {
   fi
 }
 
+asset_route_has() {
+  local pattern="$1"
+  awk '/handle @workflowAssets \{/{in_asset=1} in_asset {print} /handle @apiMe \{/{exit}' "$CADDYFILE" | grep -F -- "$pattern" >/dev/null
+}
+
 forbid_pattern() {
   local pattern="$1"
   local msg="$2"
@@ -64,5 +69,12 @@ require_pattern "import authelia_forward_auth" "Missing authelia_forward_auth im
 # Quick structural sanity for webhook mTLS split (must both exist).
 require_pattern "@webhooksMtls {" "Missing mTLS webhook matcher"
 require_pattern "@webhooksAuthelia {" "Missing non-mTLS webhook matcher"
+
+# Workflow assets must fall back to n8n only when mTLS is present. A broad
+# file_server for /assets/* would shadow the n8n editor's versioned assets.
+asset_route_has "@localWorkflowAsset file {path}" || fail "Missing local workflow asset matcher in asset route"
+asset_route_has "handle @localWorkflowAsset {" || fail "Missing local workflow asset handler in asset route"
+asset_route_has "handle @workflowMtls {" || fail "Missing mTLS workflow asset fallback in asset route"
+asset_route_has "respond 404" || fail "Missing non-mTLS workflow asset fallback response in asset route"
 
 echo "Auth endpoint policy checks passed: $CADDYFILE"

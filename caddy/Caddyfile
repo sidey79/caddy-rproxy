@@ -451,8 +451,21 @@ workflow.{$CADDY_SUBDOMAIN} {
 	}
 	route {
 		handle @workflowAssets {
-			root * /srv/workflow
-			file_server
+			# Keep locally managed workflow assets, but let n8n serve its own
+			# versioned editor assets (for example /assets/index-*.js).
+			route {
+				root * /srv/workflow
+				@localWorkflowAsset file {path}
+				handle @localWorkflowAsset {
+					file_server
+				}
+				handle @workflowMtls {
+					import n8n_upstream
+				}
+				handle {
+					respond 404
+				}
+			}
 		}
 		handle @apiMe {
 			import authelia_forward_auth
