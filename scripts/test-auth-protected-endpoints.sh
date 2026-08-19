@@ -65,4 +65,11 @@ require_pattern "import authelia_forward_auth" "Missing authelia_forward_auth im
 require_pattern "@webhooksMtls {" "Missing mTLS webhook matcher"
 require_pattern "@webhooksAuthelia {" "Missing non-mTLS webhook matcher"
 
+# Workflow assets must fall back to n8n only when mTLS is present. A broad
+# file_server for /assets/* would shadow the n8n editor's versioned assets.
+require_pattern "@localWorkflowAsset file {path}" "Missing local workflow asset matcher"
+require_pattern "handle @localWorkflowAsset {" "Missing local workflow asset handler"
+require_pattern "handle @workflowMtls {" "Missing mTLS workflow asset fallback"
+require_pattern "respond 404" "Missing non-mTLS workflow asset fallback response"
+
 echo "Auth endpoint policy checks passed: $CADDYFILE"
