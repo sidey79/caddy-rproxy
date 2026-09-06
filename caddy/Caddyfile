@@ -182,6 +182,9 @@
 		}
 	}
 }
+(paperless_upstream) {
+	reverse_proxy http://paperless-ngx-webserver-1.network_backend_net:8000
+}
 #pi2 {
 #  tls internal
 #  import mTLS_optional
@@ -269,7 +272,7 @@ fhem.{$CADDY_SUBDOMAIN} {
 dms.{$CADDY_SUBDOMAIN} {
 	encode gzip
 	import authelia_forward_auth
-	reverse_proxy http://paperless-ngx-webserver-1.network_backend_net:8000
+	import paperless_upstream
 	import logging_info
 }
 
@@ -502,4 +505,15 @@ n8n.{$CADDY_SUBDOMAIN3} {
 		}
 	}
 	import n8n_upstream
+}
+
+paperless.{$CADDY_SUBDOMAIN3} {
+	tls {
+		issuer internal {
+			ca blausee_ca
+		}
+	}
+	encode gzip
+	import paperless_upstream
+	import logging_info
 }
