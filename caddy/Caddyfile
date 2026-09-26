@@ -90,7 +90,7 @@
 (fhem_transport) {
 	transport http {
 		versions 1.1
-		keepalive off
+		# keepalive off
 		# Limit concurrency to avoid FHEM 401/502 under image bursts; 20 stayed stable in load tests.
 		max_conns_per_host 20
 		tls_server_name zeus.fritz.box
