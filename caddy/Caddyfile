@@ -7,7 +7,7 @@
 	# query strings (e.g. attr WEB styleData), so raise it.
 	servers :443 {
 		protocols h1 h2
-		max_header_size 128KiB
+		max_header_size 1MiB
 	}
 	pki {
 		ca blausee_ca {
