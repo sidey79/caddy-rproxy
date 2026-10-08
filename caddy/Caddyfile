@@ -3,8 +3,11 @@
 	email sven@blausee.eu
 	# Client certificate authentication is not supported over HTTP/3. All HTTPS
 	# sites share this listener, so keep it on HTTP/1.1 and HTTP/2 for FHEM mTLS.
+	# Default header limit (~16 KB) resets FHEMWEB requests with very long
+	# query strings (e.g. attr WEB styleData), so raise it.
 	servers :443 {
 		protocols h1 h2
+		max_header_size 1MiB
 	}
 	pki {
 		ca blausee_ca {
