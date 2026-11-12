@@ -2,7 +2,7 @@ name: caddy-rproxy
 
 services:
   caddy:
-    image: caddy:2.11.7@sha256:36c24ad91a7ff7bc4c87fe22bfa8df3c4b18da0773d73fc12ee2c52b98c0bb7e
+    image: caddy:2.11.9@sha256:e40b94d0a43b5ff69cb20568d73f10c70703df7b0ffc2298eb3d723cdc9d0bd1
     depends_on:
       fetch-workflow-assets:
         condition: service_completed_successfully
